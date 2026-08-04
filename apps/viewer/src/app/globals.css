@@ -1,0 +1,176 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted-ink: var(--muted-ink);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-border: var(--border);
+  --color-input: var(--border);
+  --color-ring: var(--ring);
+  --color-card: var(--background);
+  --color-card-foreground: var(--foreground);
+  --color-primary: var(--foreground);
+  --color-primary-foreground: var(--background);
+  --font-mono: var(--font-martian), ui-monospace, Menlo, monospace;
+  --font-sans: var(--font-martian), ui-monospace, Menlo, monospace;
+}
+
+/*
+  where we were — soft duotone tokens (datamatics lineage, quieted).
+  Two themes, one system: near-black field / off-white ink (dark) and warm
+  paper / near-black ink (light). One muted ink tier for demoted text
+  (timestamps, counts) — always ≥4.5:1 on its ground. No hue, no radius,
+  no shadow. Hairlines are the only structural device. Inversion at region
+  scale still means exactly one thing: a decision is waiting on you; at
+  control scale it means active/pressed. Texture (pixel grids, digit
+  matrices) uses alpha; text ink never does.
+  Theme resolution: :root carries dark; [data-theme="light"] overrides;
+  with no data-theme attribute the system preference decides.
+*/
+:root {
+  --background: #111214;
+  --foreground: #ededea;
+  --muted-ink: #a3a6ad;
+  /* Cobalt: the one hue. It means a decision waits on you, and it carries
+     interaction feedback (focus, caret, selection). Nothing else is colored.
+     --accent-inverted is the opposite theme's cobalt, for use on inverted
+     (foreground-colored) regions where the ground flips. */
+  --accent: oklch(0.68 0.17 265);
+  --accent-ink: #111214;
+  --accent-inverted: oklch(0.47 0.21 265);
+  --border: #ededea;
+  --ring: var(--accent);
+  --rule-faint: rgb(255 255 255 / 0.16);
+  --bar-faint: rgb(255 255 255 / 0.28);
+}
+
+:root[data-theme="light"] {
+  --background: #f6f5f2;
+  --foreground: #1b1c1e;
+  --muted-ink: #5c5f66;
+  --accent: oklch(0.47 0.21 265);
+  --accent-ink: #f6f5f2;
+  --accent-inverted: oklch(0.68 0.17 265);
+  --border: #1b1c1e;
+  --ring: var(--accent);
+  --rule-faint: rgb(0 0 0 / 0.14);
+  --bar-faint: rgb(0 0 0 / 0.2);
+}
+
+/* data-theme is always stamped: "dark" by the server, corrected pre-paint
+   by the head script (AUTO resolves via matchMedia). No-JS default: dark. */
+
+@layer base {
+  * {
+    @apply border-border;
+    border-radius: 0;
+  }
+  html {
+    @apply font-mono;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  ::selection {
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+  .inverted ::selection {
+    background: var(--accent-inverted);
+    color: var(--background);
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  .inverted :focus-visible {
+    outline-color: var(--accent-inverted);
+  }
+  input,
+  textarea {
+    caret-color: var(--accent);
+  }
+}
+
+/* Inside an inverted region the demoted ink tier collapses into the
+   region's own ink — grey has no seat on a signal surface. Unlayered so
+   it outranks the generated utility. */
+.inverted .t-data {
+  color: inherit;
+}
+
+/* Label voice: small tracked caps. */
+@utility t-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* Data voice: tabular numerics, demoted ink. */
+@utility t-data {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  text-transform: uppercase;
+  color: var(--muted-ink);
+}
+
+/* Faint structural rule (texture, never text). */
+@utility rule-faint {
+  border-color: var(--rule-faint);
+}
+
+/* Theme cross-fade: stamped by the toggle for one beat, then removed.
+   The toggle skips it entirely under prefers-reduced-motion. */
+.theme-anim,
+.theme-anim *,
+.theme-anim *::before,
+.theme-anim *::after {
+  transition:
+    background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    fill 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Zoom morph: project items carry per-id view-transition-names, so a zoom
+   change morphs each project between row and tile; everything else
+   cross-fades. The entrance stagger is suppressed while morphing. */
+::view-transition-group(*) {
+  animation-duration: 0.3s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+.zooming .field-sample {
+  animation: none !important;
+}
+
+/* The entrance: rows sample into place on load. */
+@keyframes field-sample {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.field-sample {
+  animation: field-sample 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Reduced motion holds a single still. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
