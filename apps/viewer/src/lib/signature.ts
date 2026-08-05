@@ -26,6 +26,33 @@ export function pixelGrid(id: string, cols: number, rows: number): boolean[] {
   return Array.from({ length: cols * rows }, () => rand() > 0.55);
 }
 
+export interface CellLife {
+  anim: "dip" | "ghost";
+  /** Cycle length in seconds. */
+  period: number;
+  /** Negative phase offset in seconds, so cells never blink in unison. */
+  delay: number;
+  /** Scan timing jitter in ms. */
+  scanJitter: number;
+  /** Scan flick length in ms. */
+  scanDuration: number;
+}
+
+/**
+ * Deterministic per-cell animation timings for a pixel grid. Seeded
+ * separately from the grid so the signature itself never changes.
+ */
+export function signatureLife(id: string, cells: boolean[]): CellLife[] {
+  const rand = mulberry32(hash32(`${id}:life`));
+  return cells.map((on) => {
+    const period = Math.round((7 + rand() * 6) * 100) / 100;
+    const delay = Math.round(-rand() * period * 100) / 100;
+    const scanJitter = Math.round(rand() * 36 - 18);
+    const scanDuration = Math.round(100 + rand() * 120);
+    return { anim: on ? "dip" : "ghost", period, delay, scanJitter, scanDuration };
+  });
+}
+
 /** Deterministic binary digit rows for an id — the numeric-matrix material. */
 export function numericMatrix(id: string, cols: number, rows: number): string[] {
   const rand = mulberry32(hash32(`${id}:matrix`));

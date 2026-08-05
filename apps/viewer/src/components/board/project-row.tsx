@@ -37,7 +37,7 @@ export function ProjectRow({ project, tasks, zoom, index }: Props) {
       <li className="field-sample" style={delay}>
         <Link
           href={`/project/${project.id}`}
-          className="flex h-full flex-col gap-4 border p-5 hover:bg-foreground hover:text-background"
+          className="sig-hover flex h-full flex-col gap-4 border p-5 hover:bg-foreground hover:text-background"
         >
           <span className="flex items-center justify-between gap-3">
             <PixelMap id={project.id} cols={14} rows={4} cell={4} />
@@ -68,7 +68,7 @@ export function ProjectRow({ project, tasks, zoom, index }: Props) {
       style={delay}
     >
       <div className="flex items-baseline justify-between gap-4">
-        <h3 className="flex items-center gap-4 text-[16px] font-bold">
+        <h3 className="sig-hover flex items-center gap-4 text-[16px] font-bold">
           <Link
             href={`/project/${project.id}`}
             aria-label={`${project.name} — project detail`}

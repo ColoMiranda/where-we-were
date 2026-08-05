@@ -27,7 +27,7 @@ export default async function ProjectPage({
     <main className="mx-auto w-full max-w-3xl px-6 pb-32">
       <header className="py-10">
         <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
+          <div className="sig-hover flex items-center gap-4">
             <PixelMap id={project.id} cols={10} rows={3} cell={4} />
             <h1 className="text-[22px] font-bold tracking-[0.08em] uppercase">
               <TypeOn text={project.name} />

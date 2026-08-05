@@ -165,6 +165,69 @@
   animation: field-sample 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+/* The living signature. Idle: every glyph cell blinks on its own seeded
+   cycle (--p period, --d phase) and always returns to the true grid —
+   on-cells dip via pm-dip, off-cells blink on via pm-ghost. Hover on the
+   glyph or a .sig-hover ancestor runs the scan: pixels fire once in
+   column-major order (--i, 5ms steps) with seeded jitter (--sj) and flick
+   length (--sd), then hold. The reduced-motion kill below stills all of
+   it. */
+@keyframes pm-dip {
+  0%,
+  1.4% {
+    opacity: 0.25;
+  }
+  1.5%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes pm-ghost {
+  0%,
+  1.1% {
+    opacity: 0.3;
+  }
+  1.2%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes pm-scan {
+  0%,
+  55% {
+    opacity: 0.15;
+  }
+  56%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes pm-scan-ghost {
+  0%,
+  55% {
+    opacity: 0.3;
+  }
+  56%,
+  100% {
+    opacity: 0;
+  }
+}
+.pm-dip {
+  animation: pm-dip var(--p) linear var(--d) infinite;
+}
+.pm-ghost {
+  animation: pm-ghost var(--p) linear var(--d) infinite;
+}
+.sig-hover:hover .pm .pm-on,
+.pm:hover .pm-on {
+  animation: pm-scan var(--sd) linear max(0ms, calc(var(--i) * 5ms + var(--sj)));
+}
+.sig-hover:hover .pm .pm-ghost,
+.pm:hover .pm-ghost {
+  animation: pm-scan-ghost var(--sd) linear
+    max(0ms, calc(var(--i) * 5ms + var(--sj)));
+}
+
 /* Reduced motion holds a single still. */
 @media (prefers-reduced-motion: reduce) {
   *,

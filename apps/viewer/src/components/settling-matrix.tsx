@@ -1,17 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { numericMatrix } from "@/lib/signature";
 
 const FRAMES = 6;
 const FRAME_MS = 66;
+const FLIP_TICK_MS = 1400;
+const FLIP_CHANCE = 0.35;
+const FLIP_HOLD_MS = 150;
 
 /**
- * The numeric-matrix material, resolving on arrival: digits scramble and
- * settle left-to-right into the id's true signature over ~400ms. One-shot,
- * never loops; holds the final still under reduced motion. Server render
- * and first client render both show the final digits, so hydration never
- * mismatches — the scramble starts strictly after mount.
+ * The numeric-matrix material: digits scramble and settle left-to-right
+ * into the id's true signature — on arrival, on hover/tap replay, and
+ * back from idle single-digit flips. Server render and first client
+ * render both show the final digits, so hydration never mismatches;
+ * reduced motion holds the still.
  */
 export function SettlingMatrix({
   id,
@@ -25,16 +28,22 @@ export function SettlingMatrix({
   className?: string;
 }) {
   const [lines, setLines] = useState(() => numericMatrix(id, cols, rows));
+  const settling = useRef(false);
+  const settleTimer = useRef(0);
+  const flipTimer = useRef(0);
 
-  useEffect(() => {
+  const settle = useCallback(() => {
+    if (settling.current) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    settling.current = true;
     const final = numericMatrix(id, cols, rows);
     let frame = 0;
-    const timer = window.setInterval(() => {
+    settleTimer.current = window.setInterval(() => {
       frame++;
       if (frame >= FRAMES) {
         setLines(final);
-        window.clearInterval(timer);
+        window.clearInterval(settleTimer.current);
+        settling.current = false;
         return;
       }
       const settled = Math.floor((frame / FRAMES) * cols);
@@ -47,12 +56,50 @@ export function SettlingMatrix({
         )
       );
     }, FRAME_MS);
-    return () => window.clearInterval(timer);
+  }, [id, cols, rows]);
+
+  useEffect(() => {
+    settle();
+    return () => {
+      window.clearInterval(settleTimer.current);
+      settling.current = false;
+    };
+  }, [settle]);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const tick = window.setInterval(() => {
+      if (settling.current || document.hidden || Math.random() > FLIP_CHANCE)
+        return;
+      const final = numericMatrix(id, cols, rows);
+      const row = Math.floor(Math.random() * rows);
+      const col = Math.floor(Math.random() * cols);
+      setLines(
+        final.map((line, i) =>
+          i === row
+            ? line.slice(0, col) +
+              (line[col] === "1" ? "0" : "1") +
+              line.slice(col + 1)
+            : line
+        )
+      );
+      flipTimer.current = window.setTimeout(() => {
+        if (!settling.current) setLines(final);
+      }, FLIP_HOLD_MS);
+    }, FLIP_TICK_MS);
+    return () => {
+      window.clearInterval(tick);
+      window.clearTimeout(flipTimer.current);
+    };
   }, [id, cols, rows]);
 
   return (
     <div
       aria-hidden
+      onClick={settle}
+      onPointerEnter={(e) => {
+        if (e.pointerType === "mouse") settle();
+      }}
       className={`text-[9px] leading-[1.6] tracking-[0.2em] text-(--bar-faint) ${className}`}
     >
       {lines.map((line, i) => (
