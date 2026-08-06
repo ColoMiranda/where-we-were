@@ -1,5 +1,6 @@
 import type {
   Blocker,
+  BlockerAnswer,
   BlockerOption,
   Priority,
   Project,
@@ -47,10 +48,33 @@ export function parseContext(v: unknown): TaskContext | undefined {
   return Object.keys(out).length ? out : undefined;
 }
 
+/** Validate the `answer` jsonb blob nested in a blocker; throws on a malformed shape. */
+function parseBlockerAnswer(v: unknown): BlockerAnswer | undefined {
+  if (v === null || v === undefined) return undefined;
+  if (typeof v !== "object" || Array.isArray(v)) {
+    throw new Error(`Malformed blocker answer: ${JSON.stringify(v)}`);
+  }
+  const o = v as { optionId?: unknown; text?: unknown; at?: unknown };
+  if (typeof o.at !== "string") {
+    throw new Error(`Malformed blocker answer: ${JSON.stringify(v)}`);
+  }
+  if (o.optionId !== undefined && typeof o.optionId !== "string") {
+    throw new Error(`Malformed blocker answer: ${JSON.stringify(v)}`);
+  }
+  if (o.text !== undefined && typeof o.text !== "string") {
+    throw new Error(`Malformed blocker answer: ${JSON.stringify(v)}`);
+  }
+  return {
+    at: o.at,
+    ...(typeof o.optionId === "string" ? { optionId: o.optionId } : {}),
+    ...(typeof o.text === "string" ? { text: o.text } : {}),
+  };
+}
+
 /** Validate the `blocker` jsonb blob; throws on a malformed shape. */
 export function parseBlocker(v: unknown): Blocker | undefined {
   if (v === null || v === undefined) return undefined;
-  const o = v as { question?: unknown; options?: unknown };
+  const o = v as { question?: unknown; options?: unknown; answer?: unknown };
   if (
     typeof o !== "object" ||
     typeof o.question !== "string" ||
@@ -69,7 +93,8 @@ export function parseBlocker(v: unknown): Blocker | undefined {
       ...(b.recommended === true ? { recommended: true } : {}),
     };
   });
-  return { question: o.question, options };
+  const answer = parseBlockerAnswer(o.answer);
+  return { question: o.question, options, ...(answer ? { answer } : {}) };
 }
 
 export function rowToTask(row: Row): WwwTask {

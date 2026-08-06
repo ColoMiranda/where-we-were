@@ -26,6 +26,14 @@ export interface BlockerOption {
 export interface Blocker {
   question: string;
   options: BlockerOption[];
+  answer?: BlockerAnswer;
+}
+
+/** The human's reply to a blocker: a picked option, free text, or both. */
+export interface BlockerAnswer {
+  optionId?: string;
+  text?: string;
+  at: string;
 }
 
 export interface TaskContext {

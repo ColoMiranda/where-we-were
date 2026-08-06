@@ -1,8 +1,9 @@
-import { projects, wins } from "@/lib/seed";
+import { getProjects, getWins } from "@/lib/data";
 import { dataTime } from "@/lib/time";
 import { TypeOn } from "@/components/type-on";
 
-export default function WinsPage() {
+export default async function WinsPage() {
+  const [projects, wins] = await Promise.all([getProjects(), getWins()]);
   const byId = new Map(projects.map((p) => [p.id, p]));
   const sorted = [...wins].sort((a, b) => b.at.localeCompare(a.at));
 

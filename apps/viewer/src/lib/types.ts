@@ -1,61 +1,14 @@
-export type TaskStatus =
-  | "idea"
-  | "todo"
-  | "in-progress"
-  | "blocked-needs-decision"
-  | "parked-with-context"
-  | "done";
-
-export type Priority = 1 | 2 | 3;
-
-export interface BlockerOption {
-  id: string;
-  label: string;
-  recommended?: boolean;
-}
-
-export interface TaskContext {
-  repo?: string;
-  branch?: string;
-  files?: string[];
-  sha?: string;
-  decisions?: string[];
-  nextStep?: string;
-}
-
-export interface WwwTask {
-  id: string;
-  /** What's left — one imperative line. */
-  title: string;
-  /** null = lives in the idea bag. */
-  projectId: string | null;
-  status: TaskStatus;
-  priority: Priority;
-  lastTouched: string;
-  sessionLabel?: string;
-  context?: TaskContext;
-  blocker?: {
-    question: string;
-    options: BlockerOption[];
-  };
-}
-
-export interface Project {
-  id: string;
-  name: string;
-  /** Normalized git remote, or null for explicitly registered projects. */
-  remote: string | null;
-  /** Living status note — 2–3 lines of prose for a cold reader. */
-  statusNote: string;
-  lastTouched: string;
-  dormant?: boolean;
-}
-
-export interface Win {
-  id: string;
-  projectId: string;
-  line: string;
-  at: string;
-}
+export type {
+  Blocker,
+  BlockerAnswer,
+  BlockerOption,
+  Priority,
+  Project,
+  TaskContext,
+  TaskStatus,
+  Win,
+  WwwTask,
+} from "@www/shared";
+export { TASK_STATUSES } from "@www/shared";
 
 export type Zoom = "focus" | "overview" | "map";

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { logout } from "@/app/login/actions";
 
 const links = [
   { href: "/", label: "BOARD" },
@@ -22,6 +23,10 @@ function dateIndex() {
 
 export function TopBar() {
   const pathname = usePathname();
+
+  if (pathname === "/login") {
+    return null;
+  }
 
   return (
     <header className="border-b">
@@ -57,6 +62,14 @@ export function TopBar() {
             );
           })}
           <ThemeToggle />
+          <form action={logout} className="flex items-stretch">
+            <button
+              type="submit"
+              className="t-label flex items-center border-l px-2.5 hover:bg-foreground hover:text-background sm:px-5"
+            >
+              OUT
+            </button>
+          </form>
           <span
             suppressHydrationWarning
             className="t-data hidden items-center border-l pl-5 lg:flex"

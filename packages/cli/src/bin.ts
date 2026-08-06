@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 import { add } from "./commands/add.ts";
 import { done } from "./commands/done.ts";
+import { hook } from "./commands/hook.ts";
 import { init } from "./commands/init.ts";
 import { list } from "./commands/list.ts";
+import { project } from "./commands/project.ts";
 import { save } from "./commands/save.ts";
 import { CliError } from "./errors.ts";
 
@@ -17,6 +19,8 @@ Usage:
            [--session-label] [--status-note]
   www list [--project <id>] [--status <s>]* [--idea] [--all]
   www done <task-id> [--win "<one line>"]
+  www project [--check]                register status of the cwd repo
+  www hook stop   Claude Code Stop-hook endpoint (reads hook JSON on stdin)
 
 All commands take --json. Task ids accept a unique prefix (4+ chars).
 Config: WWW_DATABASE_URL env var, or ~/.config/www/.env`;
@@ -27,6 +31,8 @@ const commands: Record<string, (argv: string[]) => Promise<void>> = {
   save,
   list,
   done,
+  project,
+  hook,
 };
 
 const [, , cmd, ...rest] = process.argv;

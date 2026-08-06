@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import type { Project, WwwTask } from "@/lib/types";
+import { useState, useTransition } from "react";
+import type { Project } from "@/lib/types";
+import type { TaskRow } from "@/lib/data";
+import { answerBlocker } from "@/lib/actions";
 
 /** Squared expand chevron drawn in the world's own stroke. */
 function ExpandMark({ open }: { open: boolean }) {
@@ -20,7 +22,7 @@ function ExpandMark({ open }: { open: boolean }) {
 }
 
 interface Props {
-  blocked: WwwTask[];
+  blocked: TaskRow[];
   projects: Project[];
 }
 
@@ -31,18 +33,37 @@ interface Props {
  * place; renders nothing when nothing was ever waiting.
  */
 export function BlockersStrip({ blocked, projects }: Props) {
-  const [answers, setAnswers] = useState<Record<string, string>>({});
   const [openId, setOpenId] = useState<string | null>(null);
+  const [pendingId, setPendingId] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isPending, startTransition] = useTransition();
 
   if (blocked.length === 0) return null;
 
   const byId = new Map(projects.map((p) => [p.id, p]));
-  const remaining = blocked.filter((t) => !answers[t.id]).length;
+  const remaining = blocked.filter((t) => !t.blocker?.answer).length;
   const released = remaining === 0;
   const count = String(remaining).padStart(2, "0");
   const markerColor = released
     ? "var(--accent)"
     : "var(--accent-inverted)";
+
+  function choose(task: TaskRow, optionId: string) {
+    setErrors((e) => ({ ...e, [task.id]: "" }));
+    setPendingId(task.id);
+    startTransition(async () => {
+      const result = await answerBlocker(
+        task.id,
+        task.cas,
+        { optionId },
+        task.projectId
+      );
+      setPendingId(null);
+      if (result?.error) {
+        setErrors((e) => ({ ...e, [task.id]: result.error! }));
+      }
+    });
+  }
 
   return (
     <section
@@ -77,9 +98,11 @@ export function BlockersStrip({ blocked, projects }: Props) {
         className={`divide-y px-6 ${released ? "" : "divide-background"}`}
       >
         {blocked.map((task) => {
-          const answered = answers[task.id];
+          const answered = task.blocker?.answer;
           const open = openId === task.id;
           const project = task.projectId ? byId.get(task.projectId) : undefined;
+          const saving = isPending && pendingId === task.id;
+          const error = errors[task.id];
           return (
             <li key={task.id} className="py-4">
               <button
@@ -124,26 +147,37 @@ export function BlockersStrip({ blocked, projects }: Props) {
                       Logged — travels with the next copied prompt.
                     </p>
                   ) : (
-                    <div className="mt-4 flex flex-wrap gap-2.5 pb-2 pl-7">
-                      {task.blocker?.options.map((opt) => (
-                        <button
-                          key={opt.id}
-                          type="button"
-                          onClick={() =>
-                            setAnswers((a) => ({ ...a, [task.id]: opt.id }))
-                          }
-                          className={`t-data border px-4 py-2 text-left ${
-                            released
-                              ? "hover:bg-foreground hover:text-background"
-                              : "border-background hover:bg-background hover:text-foreground"
-                          }`}
-                        >
-                          {opt.label}
-                          {opt.recommended && (
-                            <span className="font-bold"> · REC</span>
-                          )}
-                        </button>
-                      ))}
+                    <div className="mt-4 pb-2 pl-7">
+                      <div className="flex flex-wrap gap-2.5">
+                        {task.blocker?.options.map((opt) => (
+                          <button
+                            key={opt.id}
+                            type="button"
+                            disabled={saving}
+                            onClick={() => choose(task, opt.id)}
+                            className={`t-data border px-4 py-2 text-left disabled:opacity-50 ${
+                              released
+                                ? "hover:bg-foreground hover:text-background"
+                                : "border-background hover:bg-background hover:text-foreground"
+                            }`}
+                          >
+                            {opt.label}
+                            {opt.recommended && (
+                              <span className="font-bold"> · REC</span>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                      {saving && (
+                        <p role="status" className="t-data mt-2.5">
+                          SAVING
+                        </p>
+                      )}
+                      {error && (
+                        <p role="alert" className="t-data mt-2.5">
+                          {error}
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>

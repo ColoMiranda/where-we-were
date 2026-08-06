@@ -1,9 +1,10 @@
-import { tasks } from "@/lib/seed";
+import { getTasks } from "@/lib/data";
 import { dataTime } from "@/lib/time";
 import { CaptureBar } from "@/components/board/capture-bar";
 import { TypeOn } from "@/components/type-on";
 
-export default function BagPage() {
+export default async function BagPage() {
+  const tasks = await getTasks();
   const ideas = tasks
     .filter((t) => t.projectId === null && t.status === "idea")
     .sort((a, b) => b.lastTouched.localeCompare(a.lastTouched));

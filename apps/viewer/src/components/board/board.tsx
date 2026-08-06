@@ -2,7 +2,8 @@
 
 import { useSyncExternalStore } from "react";
 import { flushSync } from "react-dom";
-import type { Project, Win, WwwTask, Zoom } from "@/lib/types";
+import type { Project, Win, Zoom } from "@/lib/types";
+import type { TaskRow } from "@/lib/data";
 import { SectionRule } from "@/components/section-rule";
 import { TypeOn } from "@/components/type-on";
 import { CaptureBar } from "./capture-bar";
@@ -16,7 +17,7 @@ export type BoardState = "ready" | "loading" | "error" | "empty";
 interface Props {
   state: BoardState;
   projects: Project[];
-  tasks: WwwTask[];
+  tasks: TaskRow[];
   wins: Win[];
 }
 

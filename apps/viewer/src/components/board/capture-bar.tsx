@@ -1,29 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
+import { captureIdea } from "@/lib/actions";
 
 export function CaptureBar() {
   const [value, setValue] = useState("");
   const [justAdded, setJustAdded] = useState(false);
+  const [state, formAction, pending] = useActionState(captureIdea, undefined);
+  const wasPending = useRef(false);
 
-  function submit(e: React.FormEvent) {
-    e.preventDefault();
-    const line = value.trim();
-    if (!line) return;
-    // v1 mock: capture lands locally. Supabase wiring replaces this.
-    setValue("");
+  // Fires the confirmation once the action settles without an error;
+  // an error is surfaced inline instead, below the field.
+  useEffect(() => {
+    const settled = wasPending.current && !pending;
+    wasPending.current = pending;
+    if (!settled || state?.error) return;
     setJustAdded(true);
-    window.setTimeout(() => setJustAdded(false), 2200);
+    const t = window.setTimeout(() => setJustAdded(false), 2200);
+    return () => window.clearTimeout(t);
+  }, [pending, state]);
+
+  function submit(e: React.FormEvent<HTMLFormElement>) {
+    if (!value.trim()) {
+      e.preventDefault();
+      return;
+    }
+    setValue("");
   }
 
   return (
-    <form onSubmit={submit}>
+    <form action={formAction} onSubmit={submit}>
       <label htmlFor="capture" className="t-label block">
         Capture
       </label>
       <div className="mt-3 flex h-14 items-center border transition-colors duration-150 focus-within:border-(--accent)">
         <input
           id="capture"
+          name="title"
           type="text"
           value={value}
           onChange={(e) => setValue(e.target.value)}
@@ -42,13 +55,19 @@ export function CaptureBar() {
           value.trim() && (
             <button
               type="submit"
-              className="t-label h-full border-l px-6 hover:bg-foreground hover:text-background"
+              disabled={pending}
+              className="t-label h-full border-l px-6 hover:bg-foreground hover:text-background disabled:opacity-50"
             >
               Log
             </button>
           )
         )}
       </div>
+      {state?.error && (
+        <p role="alert" className="t-data mt-2 text-(--accent)">
+          {state.error}
+        </p>
+      )}
     </form>
   );
 }
