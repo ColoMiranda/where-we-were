@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Github, Monitor } from "lucide-react";
+import { Monitor } from "lucide-react";
+import { GithubMark } from "@/components/github-mark";
 import type { Project, WwwTask, Zoom } from "@/lib/types";
 import { PixelMap } from "@/components/field-texture";
 import { CopyPromptButton, statusTag } from "@/components/task-controls";
@@ -116,7 +117,7 @@ export function ProjectRow({ project, tasks, zoom, index }: Props) {
           }
         >
           {project.remote ? (
-            <Github size={13} strokeWidth={1.75} aria-hidden />
+            <GithubMark size={13} />
           ) : (
             <Monitor size={13} strokeWidth={1.75} aria-hidden />
           )}

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { Github, Monitor } from "lucide-react";
+import { Monitor } from "lucide-react";
+import { GithubMark } from "@/components/github-mark";
 import { getProjects, getTasks } from "@/lib/data";
 import { PixelMap } from "@/components/field-texture";
 import { SectionRule } from "@/components/section-rule";
@@ -43,7 +44,7 @@ export default async function ProjectPage({
         </div>
         <p className="t-data mt-3 flex items-center gap-2">
           {project.remote ? (
-            <Github size={13} strokeWidth={1.75} aria-hidden />
+            <GithubMark size={13} />
           ) : (
             <Monitor size={13} strokeWidth={1.75} aria-hidden />
           )}
