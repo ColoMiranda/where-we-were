@@ -18,8 +18,8 @@ in one monospace system with room to breathe. Refuses the friendly
 card-grid productivity board and the cream-serif briefing before it.
 OWN-WORLD: Soft duotone, themeable - near-black field/off-white ink and
 warm paper/near-black ink - one muted tier for demoted data, no hue, no
-radius, no shadow. Martian Mono only. Pixel-grid and digit-matrix
-texture hashed per project. Inversion at region scale means one thing:
+radius, no shadow. Martian Mono only. Pixel-grid texture hashed per
+project. Inversion at region scale means one thing:
 a decision waits on you.
 STORY: Marcos opens cold, reads the field top-down - inverted strip
 first (what waits), then project rows with status prose, then the idea

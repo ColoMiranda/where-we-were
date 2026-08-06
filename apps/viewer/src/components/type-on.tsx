@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 
 /**
  * Title type-on: the page's name prints in over ~350ms with a block caret
- * that leaves when the line completes — the same resolve-on-arrival family
- * as SettlingMatrix. The full text renders on the server and stays in the
+ * that leaves when the line completes — one-shot, resolve-on-arrival.
+ * The full text renders on the server and stays in the
  * accessibility tree throughout (the animation runs in an aria-hidden
  * overlay atop a space-reserving copy), so nothing shifts and screen
  * readers never wait. One-shot; reduced motion holds the final still.

@@ -52,11 +52,3 @@ export function signatureLife(id: string, cells: boolean[]): CellLife[] {
     return { anim: on ? "dip" : "ghost", period, delay, scanJitter, scanDuration };
   });
 }
-
-/** Deterministic binary digit rows for an id — the numeric-matrix material. */
-export function numericMatrix(id: string, cols: number, rows: number): string[] {
-  const rand = mulberry32(hash32(`${id}:matrix`));
-  return Array.from({ length: rows }, () =>
-    Array.from({ length: cols }, () => (rand() > 0.5 ? "1" : "0")).join("")
-  );
-}

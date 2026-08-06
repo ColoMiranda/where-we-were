@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
-import { projects, tasks } from "@/lib/seed";
+import { getProjects, getTasks } from "@/lib/data";
 import { PixelMap } from "@/components/field-texture";
-import { SettlingMatrix } from "@/components/settling-matrix";
 import { SectionRule } from "@/components/section-rule";
 import { TypeOn } from "@/components/type-on";
 import { ProjectTaskList } from "@/components/project-task-list";
@@ -13,6 +12,7 @@ export default async function ProjectPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const [projects, tasks] = await Promise.all([getProjects(), getTasks()]);
   const project = projects.find((p) => p.id === id);
   if (!project) notFound();
 
@@ -34,12 +34,6 @@ export default async function ProjectPage({
             </h1>
           </div>
           <div className="flex shrink-0 items-center gap-4">
-            <SettlingMatrix
-              id={project.id}
-              cols={8}
-              rows={3}
-              className="hidden sm:block"
-            />
             <span className="t-data">
               LAST {dataTime(project.lastTouched)}
               {project.dormant ? " · DORMANT" : ""}
