@@ -45,7 +45,9 @@ Put the bin on your PATH — either `pnpm setup && cd packages/cli && pnpm link 
 ln -s "$PWD/packages/cli/src/bin.ts" ~/.local/bin/www
 ```
 
-Then, inside any repo you work in: `www init "Project Name"` — and try `www add "first idea"`.
+Then, inside any folder you work in — **git optional**: `www init "Project Name"` — and try `www add "first idea"`.
+
+`init` writes a tiny `.www` marker (just the project slug) that links the folder to its project; commit it in git repos so fresh clones self-link. Repos also resolve by their git remote, marker or not. `www link <project-id>` attaches an existing project to another folder — and if that folder has a remote the project doesn't know yet, the project adopts it.
 
 ### 3. Viewer
 

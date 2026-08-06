@@ -1,10 +1,10 @@
-import { execFileSync } from "node:child_process";
 import { existsSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { normalizeRemote } from "@www/shared";
 import { withDb } from "../db.ts";
 import { CliError } from "../errors.ts";
+import { getRemoteUrl } from "../git.ts";
+import { markerProjectId, resolveProjectForDir } from "../store.ts";
 
 const NUDGE_REASON =
   "Session is ending in a registered where-we-were project. Judge honestly: is there real " +
@@ -57,28 +57,14 @@ async function stop(): Promise<void> {
   const marker = join(tmpdir(), markerName);
   if (existsSync(marker)) process.exit(0);
 
-  // Fast path: no remote, no db round-trip. cwd comes from the hook payload,
-  // not process.cwd() — the hook process's own cwd is irrelevant here.
-  let remoteUrl: string | null;
-  try {
-    remoteUrl =
-      execFileSync("git", ["config", "--get", "remote.origin.url"], {
-        cwd,
-        encoding: "utf8",
-        stdio: ["ignore", "pipe", "ignore"],
-      }).trim() || null;
-  } catch {
-    remoteUrl = null;
-  }
-  if (!remoteUrl) process.exit(0);
+  // Fast path: neither a .www marker nor a git remote — no db round-trip.
+  // cwd comes from the hook payload, not process.cwd().
+  if (!markerProjectId(cwd) && !getRemoteUrl(cwd)) process.exit(0);
 
   try {
-    const registered = await withDb(async (db) => {
-      const r = await db.query("select 1 from projects where remote = $1", [
-        normalizeRemote(remoteUrl),
-      ]);
-      return (r.rowCount ?? 0) > 0;
-    });
+    const registered = await withDb(
+      async (db) => (await resolveProjectForDir(db, cwd)) !== null,
+    );
     if (!registered) process.exit(0);
   } catch {
     // db unreachable, env missing, anything — silent exit, never block Claude Code.

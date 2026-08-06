@@ -1,8 +1,9 @@
 import { execFileSync } from "node:child_process";
 
-function git(...args: string[]): string | null {
+function git(args: string[], cwd?: string): string | null {
   try {
     const out = execFileSync("git", args, {
+      cwd,
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"],
     }).trim();
@@ -12,15 +13,15 @@ function git(...args: string[]): string | null {
   }
 }
 
-/** Raw origin remote URL of the cwd repo, or null. */
-export function getRemoteUrl(): string | null {
-  return git("config", "--get", "remote.origin.url");
+/** Raw origin remote URL of a repo (default: cwd), or null. */
+export function getRemoteUrl(cwd?: string): string | null {
+  return git(["config", "--get", "remote.origin.url"], cwd);
 }
 
 export function getBranch(): string | null {
-  return git("rev-parse", "--abbrev-ref", "HEAD");
+  return git(["rev-parse", "--abbrev-ref", "HEAD"]);
 }
 
 export function getSha(): string | null {
-  return git("rev-parse", "HEAD");
+  return git(["rev-parse", "HEAD"]);
 }

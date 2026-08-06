@@ -28,7 +28,9 @@ export async function project(argv: string[]): Promise<void> {
     if (values.json) {
       console.log(JSON.stringify(proj, null, 2));
     } else {
-      console.log(`${proj.id} — ${proj.name}`);
+      console.log(
+        `${proj.id} — ${proj.name} ${proj.remote ? `(${proj.remote})` : "(local)"}`,
+      );
     }
   });
 }

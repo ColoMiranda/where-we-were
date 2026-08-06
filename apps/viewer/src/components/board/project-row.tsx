@@ -105,6 +105,7 @@ export function ProjectRow({ project, tasks, zoom, index }: Props) {
             {String(blocked.length).padStart(2, "0")} AWAITING INPUT
           </AwaitingTag>
         )}
+        <span className="min-w-0 truncate">{project.remote ?? "LOCAL"}</span>
       </p>
 
       {zoom === "focus" && open.length > 0 && (

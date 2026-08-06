@@ -3,6 +3,7 @@ import { add } from "./commands/add.ts";
 import { done } from "./commands/done.ts";
 import { hook } from "./commands/hook.ts";
 import { init } from "./commands/init.ts";
+import { link } from "./commands/link.ts";
 import { list } from "./commands/list.ts";
 import { project } from "./commands/project.ts";
 import { save } from "./commands/save.ts";
@@ -11,7 +12,8 @@ import { CliError } from "./errors.ts";
 const HELP = `www — the memory and staging ground between you and your agents.
 
 Usage:
-  www init <name> [--id <slug>]        register the cwd repo (or a no-remote project)
+  www init <name> [--id <slug>]        register the cwd folder (git optional; writes a .www marker)
+  www link <project-id>                attach the cwd folder to an existing project
   www add <title> [-p 1|2|3] [--project <id>] [--idea]
   www save <task-id> [--title] [--status] [--priority] [--next-step] [--decision]*
            [--file]* [--sha] [--branch] [--repo] [--blocker-question]
@@ -27,6 +29,7 @@ Config: WWW_DATABASE_URL env var, or ~/.config/www/.env`;
 
 const commands: Record<string, (argv: string[]) => Promise<void>> = {
   init,
+  link,
   add,
   save,
   list,

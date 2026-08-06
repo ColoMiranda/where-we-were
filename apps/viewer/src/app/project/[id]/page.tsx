@@ -40,7 +40,7 @@ export default async function ProjectPage({
             </span>
           </div>
         </div>
-        {project.remote && <p className="t-data mt-3">{project.remote}</p>}
+        <p className="t-data mt-3">{project.remote ?? "LOCAL — NO REPO LINKED"}</p>
       </header>
 
       <section aria-label="Status note" className="border p-7">

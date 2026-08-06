@@ -1,8 +1,35 @@
+import { readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import type pg from "pg";
 import type { Project, WwwTask } from "@www/shared";
 import { normalizeRemote, rowToProject, rowToTask } from "@www/shared";
 import { CliError } from "./errors.ts";
 import { getRemoteUrl } from "./git.ts";
+
+const MARKER = ".www";
+const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
+/**
+ * Nearest .www marker walking up from dir — the folder→project link that
+ * needs no git. A malformed marker is treated as absent, never guessed at.
+ */
+export function markerProjectId(dir: string): string | null {
+  let current = dir;
+  for (;;) {
+    try {
+      const id = readFileSync(join(current, MARKER), "utf8").trim();
+      return SLUG.test(id) ? id : null;
+    } catch {
+      const parent = dirname(current);
+      if (parent === current) return null;
+      current = parent;
+    }
+  }
+}
+
+export function writeMarker(dir: string, id: string): void {
+  writeFileSync(join(dir, MARKER), `${id}\n`);
+}
 
 /**
  * A task plus its updated_at as Postgres text — the CAS token. JS Date is
@@ -64,16 +91,32 @@ export async function casUpdateTask(
   );
 }
 
-/** Project registered for the cwd's git remote, or null. */
-export async function resolveCwdProject(
+/**
+ * Project registered for a directory: .www marker first (git optional),
+ * then git-remote lookup. A marker pointing at a deleted project falls
+ * through to the remote rather than failing.
+ */
+export async function resolveProjectForDir(
   db: pg.Client,
+  dir: string,
 ): Promise<Project | null> {
-  const raw = getRemoteUrl();
+  const markerId = markerProjectId(dir);
+  if (markerId) {
+    const r = await db.query("select * from projects where id = $1", [markerId]);
+    if (r.rowCount === 1) return rowToProject(r.rows[0]);
+  }
+  const raw = getRemoteUrl(dir);
   if (!raw) return null;
   const r = await db.query("select * from projects where remote = $1", [
     normalizeRemote(raw),
   ]);
   return r.rowCount === 1 ? rowToProject(r.rows[0]) : null;
+}
+
+export async function resolveCwdProject(
+  db: pg.Client,
+): Promise<Project | null> {
+  return resolveProjectForDir(db, process.cwd());
 }
 
 export async function requireProject(

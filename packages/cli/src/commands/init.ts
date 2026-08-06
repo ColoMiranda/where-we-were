@@ -3,6 +3,7 @@ import { normalizeRemote, rowToProject, slugify } from "@www/shared";
 import { withDb } from "../db.ts";
 import { CliError } from "../errors.ts";
 import { getRemoteUrl } from "../git.ts";
+import { resolveProjectForDir, writeMarker } from "../store.ts";
 
 export async function init(argv: string[]): Promise<void> {
   const { values, positionals } = parseArgs({
@@ -26,15 +27,12 @@ export async function init(argv: string[]): Promise<void> {
   }
 
   await withDb(async (db) => {
-    if (remote) {
-      const dup = await db.query("select id from projects where remote = $1", [
-        remote,
-      ]);
-      if ((dup.rowCount ?? 0) > 0) {
-        throw new CliError(
-          `This repo (${remote}) is already registered as "${dup.rows[0].id}".`,
-        );
-      }
+    // Idempotency: marker or remote already maps this folder to a project.
+    const existing = await resolveProjectForDir(db, process.cwd());
+    if (existing) {
+      throw new CliError(
+        `This folder is already registered as "${existing.id}". www link ${existing.id} to relink, or pick a different folder.`,
+      );
     }
     for (let n = 1; ; n++) {
       const id = n === 1 ? baseSlug : `${baseSlug}-${n}`;
@@ -44,11 +42,18 @@ export async function init(argv: string[]): Promise<void> {
           [id, name, remote],
         );
         const project = rowToProject(r.rows[0]);
+        try {
+          writeMarker(process.cwd(), id);
+        } catch {
+          console.error(
+            "Note: couldn't write the .www marker here — folder resolution will rely on the git remote.",
+          );
+        }
         if (values.json) {
           console.log(JSON.stringify(project, null, 2));
         } else {
           console.log(
-            `Registered "${name}" as ${id}${remote ? ` (${remote})` : " (no remote)"}.`,
+            `Registered "${name}" as ${id}${remote ? ` (${remote})` : " (local — no remote)"}. Wrote .www marker${remote ? " — commit it so clones self-link" : ""}.`,
           );
         }
         return;
