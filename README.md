@@ -73,7 +73,17 @@ Add to `~/.claude/settings.json`:
 }
 ```
 
-It's silent everywhere except registered repos, fires once per session, and never blocks your session on any failure. Optionally, tell your agents about the CLI in your global `CLAUDE.md` so they check parked work on session start and park blockers instead of guessing.
+It's silent everywhere except registered repos, fires once per session, and never blocks your session on any failure.
+
+### 5. Teach your agents (Claude Code skill)
+
+[`skills/www/`](skills/www/) ships an Agent Skill that teaches Claude the full workflow — check parked work on session start, park blockers instead of guessing, save real residue at session end. Symlink it in:
+
+```sh
+ln -s "$(pwd)/skills/www" ~/.claude/skills/www
+```
+
+A one-line pointer in your global `CLAUDE.md` helps it trigger reliably: "In repos where `www project --check` exits 0, load the `www` skill."
 
 ## The loop
 
