@@ -95,10 +95,6 @@ you:    copy task as prompt → paste into any agent → it re-validates against
 agent:  www done <id> --win "one line"      → wins feed
 ```
 
-## Docs
-
-The product spec ([PRODUCT.md](PRODUCT.md)), the recorded design system ([DESIGN.md](DESIGN.md)), and the full session log of building this ([PROGRESS.md](PROGRESS.md)) are in the repo — including every reversal. They're half the point.
-
 ## License
 
 [MIT](LICENSE)
