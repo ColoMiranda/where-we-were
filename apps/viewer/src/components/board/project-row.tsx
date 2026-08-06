@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Github, Monitor } from "lucide-react";
 import type { Project, WwwTask, Zoom } from "@/lib/types";
 import { PixelMap } from "@/components/field-texture";
 import { CopyPromptButton, statusTag } from "@/components/task-controls";
@@ -105,7 +106,21 @@ export function ProjectRow({ project, tasks, zoom, index }: Props) {
             {String(blocked.length).padStart(2, "0")} AWAITING INPUT
           </AwaitingTag>
         )}
-        <span className="min-w-0 truncate">{project.remote ?? "LOCAL"}</span>
+        <span
+          className="inline-flex"
+          title={project.remote ?? "Local project — no repo linked"}
+          aria-label={
+            project.remote
+              ? `Linked to ${project.remote}`
+              : "Local project — no repo linked"
+          }
+        >
+          {project.remote ? (
+            <Github size={13} strokeWidth={1.75} aria-hidden />
+          ) : (
+            <Monitor size={13} strokeWidth={1.75} aria-hidden />
+          )}
+        </span>
       </p>
 
       {zoom === "focus" && open.length > 0 && (

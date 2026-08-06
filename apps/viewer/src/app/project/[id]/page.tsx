@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Github, Monitor } from "lucide-react";
 import { getProjects, getTasks } from "@/lib/data";
 import { PixelMap } from "@/components/field-texture";
 import { SectionRule } from "@/components/section-rule";
@@ -40,7 +41,14 @@ export default async function ProjectPage({
             </span>
           </div>
         </div>
-        <p className="t-data mt-3">{project.remote ?? "LOCAL — NO REPO LINKED"}</p>
+        <p className="t-data mt-3 flex items-center gap-2">
+          {project.remote ? (
+            <Github size={13} strokeWidth={1.75} aria-hidden />
+          ) : (
+            <Monitor size={13} strokeWidth={1.75} aria-hidden />
+          )}
+          {project.remote ?? "LOCAL"}
+        </p>
       </header>
 
       <section aria-label="Status note" className="border p-7">
