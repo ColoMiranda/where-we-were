@@ -1,6 +1,6 @@
 # where we were
 
-**git records what happened. this records what's left and why it stopped.**
+**where were we?** — git records what happened. this records what's left and why it stopped.
 
 A memory and staging ground between you and your coding agents. Ideas land here as one-liners. When a session ends, the agent parks its unfinished work: what's left, decisions already made, the question it couldn't answer without you. When you're ready to pick something up, you copy the task out as a prompt and paste it into whatever you use — Claude Code, Cursor, claude.ai, anything with a text box. No plugin, no lock-in.
 
