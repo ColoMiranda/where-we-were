@@ -2,13 +2,21 @@
 
 **git records what happened. this records what's left and why it stopped.**
 
-A memory and staging ground between you and your coding agents. Capture ideas as they come; when a session ends, the agent parks its unfinished work — what's left, decisions already made, blockers — and when it's time to work again, you copy any task out as a prompt and paste it into whatever agent you use. Claude Code, Cursor, claude.ai — anything with a text box. No plugin, no lock-in.
+A memory and staging ground between you and your coding agents. Ideas land here as one-liners. When a session ends, the agent parks its unfinished work: what's left, decisions already made, the question it couldn't answer without you. When you're ready to pick something up, you copy the task out as a prompt and paste it into whatever you use — Claude Code, Cursor, claude.ai, anything with a text box. No plugin, no lock-in.
+
+```
+you:    www add "idea"                            → idea bag
+agent:  works; session ends; hook nudges          → www save: what's left, decisions, blockers
+you:    open the board (phone is fine)            → answer a blocker, adjust nothing else
+you:    copy task as prompt → paste into any agent → it re-validates against the repo, continues
+agent:  www done <id> --win "one line"            → wins feed
+```
 
 Three pieces, one Postgres:
 
 - **`www`** — a CLI agents shell out to and you use from the terminal: `init`, `add`, `save`, `list`, `done`. Writes go straight to Supabase and fail loud; stale writes are rejected by a compare-and-set on `updated_at` so nothing fresh ever gets clobbered.
 - **The viewer** — a Next.js board of your projects: living status notes, an idea bag, a "waiting on you" strip of blockers you can answer from your phone (the answer travels with the next copied prompt), and a wins feed. Single user, email + password, RLS-locked.
-- **The hook** — a Claude Code Stop hook (`www hook stop`) that nudges the agent once per session, only in registered repos: *anything real left? park it — don't save junk.*
+- **The hook + skill** — a Claude Code Stop hook (`www hook stop`) that nudges the agent once per session, only in registered repos — *anything real left? park it — don't save junk* — and an [Agent Skill](skills/www/) that teaches Claude the whole workflow.
 
 This is a personal v1, built with Claude Code and used daily by its author. It's a **self-host** project: you bring your own free-tier Supabase and (optionally) Vercel, and your residue stays yours.
 
@@ -45,9 +53,14 @@ Put the bin on your PATH — either `pnpm setup && cd packages/cli && pnpm link 
 ln -s "$PWD/packages/cli/src/bin.ts" ~/.local/bin/www
 ```
 
-Then, inside any folder you work in — **git optional**: `www init "Project Name"` — and try `www add "first idea"`.
+Then register a folder — git optional — and add your first idea:
 
-`init` writes a tiny `.www` marker (just the project slug) that links the folder to its project; commit it in git repos so fresh clones self-link. Repos also resolve by their git remote, marker or not. `www link <project-id>` attaches an existing project to another folder — and if that folder has a remote the project doesn't know yet, the project adopts it.
+```sh
+www init "Project Name"
+www add "first idea"
+```
+
+`init` writes a tiny `.www` marker (just the project slug) that links the folder to its project; commit it in git repos so fresh clones self-link. Repos also resolve by their git remote, marker or not. `www link <project-id>` attaches an existing project to another folder — and if that folder has a remote the project doesn't know yet, the project adopts it. `www help` has the full flag surface.
 
 ### 3. Viewer
 
@@ -84,16 +97,6 @@ ln -s "$(pwd)/skills/www" ~/.claude/skills/www
 ```
 
 A one-line pointer in your global `CLAUDE.md` helps it trigger reliably: "In repos where `www project --check` exits 0, load the `www` skill."
-
-## The loop
-
-```
-you:    www add "idea"                      → idea bag
-agent:  works; session ends; hook nudges    → www save: what's left, decisions, blockers
-you:    open the board (phone is fine)      → answer a blocker, adjust nothing else
-you:    copy task as prompt → paste into any agent → it re-validates against the repo and continues
-agent:  www done <id> --win "one line"      → wins feed
-```
 
 ## License
 
