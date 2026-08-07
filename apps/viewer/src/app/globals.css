@@ -391,11 +391,13 @@
 .sig-hover:hover .wws rect:not(.wws-mid) {
   animation: wws-rescan 160ms linear 0ms 1 normal backwards;
 }
-.sig-hover:hover .wws .wws-bar2 {
+/* The rect qualifier keeps these at the shorthand rule's specificity —
+   without it the shorthand's 0ms delay wins and the stagger never runs. */
+.sig-hover:hover .wws rect.wws-bar2 {
   animation-delay: 60ms;
 }
-.sig-hover:hover .wws .wws-cap,
-.sig-hover:hover .wws .wws-base {
+.sig-hover:hover .wws rect.wws-cap,
+.sig-hover:hover .wws rect.wws-base {
   animation-delay: 120ms;
 }
 @keyframes wws-rescan {
@@ -404,6 +406,45 @@
     opacity: 0.15;
   }
   46%,
+  100% {
+    opacity: 1;
+  }
+}
+
+/* While hover holds, the eroded cell ghosts on a slow cycle — the break
+   remembering what filled it. Delayed past the rescan so the two never
+   overlap. */
+.sig-hover:hover .wws .wws-mid {
+  animation: wws-remember 2400ms linear 400ms infinite;
+}
+@keyframes wws-remember {
+  0%,
+  5% {
+    opacity: 0.3;
+  }
+  6%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Press restores the missing cell whole — one assert blink, held for as
+   long as the press holds (the same blink the large mark ends on). It
+   falls away again on release. Declared after the hover rule so the
+   press wins while both apply. */
+.sig-hover:active .wws .wws-mid {
+  animation: wws-restore 240ms linear 0ms 1 normal forwards;
+}
+@keyframes wws-restore {
+  0%,
+  24% {
+    opacity: 1;
+  }
+  25%,
+  49% {
+    opacity: 0;
+  }
+  50%,
   100% {
     opacity: 1;
   }
