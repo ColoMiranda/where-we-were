@@ -3,9 +3,12 @@ node_modules/
 *.log
 .next/
 .vercel
+*.tsbuildinfo
 
 # internal working docs — local only
 .impeccable/
 PRODUCT.md
+MONETIZATION.md
 DESIGN.md
 PROGRESS.md
+WEBSITE-BRIEF.md
