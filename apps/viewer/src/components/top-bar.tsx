@@ -31,6 +31,10 @@ export function TopBar() {
     if (sessionStorage.getItem("wwm-played")) return;
     sessionStorage.setItem("wwm-played", "1");
     queueMicrotask(() => setPlay(true));
+    // Drop wws-play once the entrance ends (1440ms) — while the class is
+    // on, the sig-hover rescan would restart the entrance on unhover.
+    const t = setTimeout(() => setPlay(false), 1600);
+    return () => clearTimeout(t);
   }, []);
 
   if (pathname === "/login") {
@@ -42,7 +46,7 @@ export function TopBar() {
       <div className="mx-auto flex w-full max-w-3xl items-stretch px-6">
         <Link
           href="/"
-          className="flex items-center gap-2 py-4 pr-4"
+          className="sig-hover flex items-center gap-2 py-4 pr-4"
           aria-label="where we were — board"
         >
           <BrandMarkSmall size={16} animate={play} />
