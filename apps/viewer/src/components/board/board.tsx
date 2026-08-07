@@ -57,7 +57,7 @@ function ZoomToggle({
   onChange: (z: Zoom) => void;
 }) {
   return (
-    <div role="group" aria-label="Board zoom level" className="flex border">
+    <div role="group" aria-label="Board zoom level" className="ml-auto flex border">
       {zoomLabels.map(({ value, label }, i) => (
         <button
           key={value}
@@ -137,7 +137,7 @@ export function Board({ state, projects, tasks, wins }: Props) {
 
   return (
     <main className="mx-auto w-full max-w-3xl px-6 pb-32">
-        <header className="flex items-center justify-between gap-4 py-10">
+        <header className="flex flex-wrap items-center justify-between gap-4 py-10">
           <h1 className="text-[22px] font-bold tracking-[0.08em]">
             <TypeOn text="BOARD" />
           </h1>
