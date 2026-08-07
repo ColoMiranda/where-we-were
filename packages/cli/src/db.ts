@@ -6,13 +6,18 @@ import { CliError } from "./errors.ts";
 const ENV_VAR = "WWW_DATABASE_URL";
 const ENV_FILE = join(homedir(), ".config", "www", ".env");
 
+/** Load ~/.config/www/.env into process.env if present. */
+export function loadConfigEnv(): void {
+  try {
+    process.loadEnvFile(ENV_FILE);
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code !== "ENOENT") throw e;
+  }
+}
+
 function databaseUrl(): string {
   if (!process.env[ENV_VAR]) {
-    try {
-      process.loadEnvFile(ENV_FILE);
-    } catch (e) {
-      if ((e as NodeJS.ErrnoException).code !== "ENOENT") throw e;
-    }
+    loadConfigEnv();
   }
   const url = process.env[ENV_VAR];
   if (!url) {

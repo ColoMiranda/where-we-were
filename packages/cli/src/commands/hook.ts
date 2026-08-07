@@ -1,16 +1,14 @@
 import { existsSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { withDb } from "../db.ts";
+import { loadConfigEnv, withDb } from "../db.ts";
 import { CliError } from "../errors.ts";
 import { getRemoteUrl } from "../git.ts";
 import { markerProjectId, resolveProjectForDir } from "../store.ts";
 
 const NUDGE_REASON =
-  "Session is ending in a registered where-we-were project. Judge honestly: is there real " +
-  "unfinished residue — what's left, decisions made, blockers? If yes, park it with www save " +
-  "(or www add for newly discovered work) and refresh the status note with --status-note. " +
-  "If nothing real is left, stop normally and do not save junk.";
+  "[www] Not an error — parking check, once per session. Load the www skill; " +
+  "park real residue, or stop normally if there is none.";
 
 async function readStdin(): Promise<string> {
   const chunks: Buffer[] = [];
@@ -29,6 +27,16 @@ async function readStdin(): Promise<string> {
  * CliError handler; nothing in this function may let an error escape.
  */
 async function stop(): Promise<void> {
+  // The nudge is opt-in: WWW_STOP_NUDGE=1 (or true) in the environment or
+  // ~/.config/www/.env. Default is silence — parking stays explicit.
+  try {
+    if (!process.env.WWW_STOP_NUDGE) loadConfigEnv();
+  } catch {
+    process.exit(0);
+  }
+  const nudge = (process.env.WWW_STOP_NUDGE ?? "").toLowerCase();
+  if (nudge !== "1" && nudge !== "true") process.exit(0);
+
   let raw: string;
   try {
     raw = await readStdin();
@@ -79,11 +87,8 @@ async function stop(): Promise<void> {
 
   console.log(
     JSON.stringify({
-      hookSpecificOutput: {
-        hookEventName: "Stop",
-        decision: "block",
-        reason: NUDGE_REASON,
-      },
+      decision: "block",
+      reason: NUDGE_REASON,
     }),
   );
   process.exit(0);
