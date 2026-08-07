@@ -13,16 +13,6 @@ const links = [
   { href: "/wins", label: "WINS" },
 ];
 
-function dateIndex() {
-  return new Date()
-    .toLocaleDateString("en-GB", {
-      weekday: "short",
-      day: "2-digit",
-      month: "short",
-    })
-    .toUpperCase();
-}
-
 export function TopBar() {
   const pathname = usePathname();
   const [play, setPlay] = useState(false);
@@ -84,12 +74,6 @@ export function TopBar() {
               OUT
             </button>
           </form>
-          <span
-            suppressHydrationWarning
-            className="t-data hidden items-center border-l pl-5 lg:flex"
-          >
-            {dateIndex()}
-          </span>
         </nav>
       </div>
     </header>
