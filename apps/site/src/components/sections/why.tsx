@@ -1,3 +1,5 @@
+import { SampleIn } from "@/components/sample-in";
+
 /**
  * Section 7 — why this and not X. The three pillars from WEBSITE-BRIEF.md
  * §3, one tight sentence each, framed per the sharpening notes: human
@@ -24,7 +26,7 @@ const pillars = [
 
 export function Why() {
   return (
-    <section className="space-y-8 border-t rule-faint py-14">
+    <SampleIn as="section" className="space-y-8 border-t rule-faint py-14">
       <h2 className="t-title">why this, not that</h2>
       <div>
         {pillars.map((pillar, i) => (
@@ -42,6 +44,6 @@ export function Why() {
           </div>
         ))}
       </div>
-    </section>
+    </SampleIn>
   );
 }

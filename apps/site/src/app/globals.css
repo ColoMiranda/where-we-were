@@ -15,12 +15,13 @@
 /*
   where we were — soft duotone tokens, ported from apps/viewer/src/app/
   globals.css (the "quiet data field" system; DESIGN.md is binding). This
-  is a static marketing page: only the token layer, base rules, and the
-  type/texture utilities every section needs are ported. Viewer-only
-  motion (field-sample entrance, theme cross-fade, the pixel-map living
-  signature, view-transition zoom morph) is deliberately left out, with
-  one exception: the brand mark's entrance (wwm/wws below), the page's
-  single authored motion moment.
+  is a static marketing page: the token layer, base rules, the
+  type/texture utilities, and the data-field motion system (field-sample
+  entrance, the pixel-map living signature) are ported; viewer-only
+  motion (theme cross-fade, view-transition zoom morph) stays out. The
+  brand mark's entrance (wwm/wws below) remains the page's single
+  authored motion moment — everything else only ever moves as cells and
+  rows of the field.
   Theme resolution: :root carries dark; [data-theme="light"] overrides;
   with no data-theme attribute the system preference decides.
 */
@@ -106,11 +107,13 @@
 }
 
 /* Headline voice: a smaller bold register, one step down from title
-   (DESIGN.md typography.headline). */
+   (DESIGN.md typography.headline). Carries the title family's tracking
+   so h3s read as a heading tier, not bold body. */
 @utility t-headline {
   font-size: 16px;
   font-weight: 700;
   line-height: 1.3;
+  letter-spacing: 0.08em;
 }
 
 /* Prose voice: the "read this closely" register — sentence case, relaxed
@@ -135,11 +138,12 @@
   background-color: var(--bar-faint);
 }
 
-/* The brand mark — "the break, told once". The 5×5 field flickers alive
-   (wwm-blip, per-cell --wd delay), snaps whole at 900ms, then the third
-   column breaks: two cells drop, one holds the baseline and asserts
-   itself with a single blink. Cells are only ever on or off; the
-   reduced-motion kill below stills everything to the finished mark. */
+/* The brand mark — "the break, told once", over 8s. The 5×5 field
+   flickers alive (wwm-blip, per-cell --wd delay), snaps whole at 3600ms,
+   holds a beat, then the third column breaks: two cells drop (5200ms,
+   5760ms), one holds the baseline and asserts itself with a single blink
+   near the end. Cells are only ever on or off; the reduced-motion kill
+   below stills everything to the finished mark. */
 .wwm rect {
   fill: currentColor;
   opacity: 0;
@@ -150,26 +154,26 @@
 }
 .wwm-play .wwm-on {
   animation:
-    wwm-snap-on 2400ms linear 0ms 1 normal both,
-    wwm-blip 240ms linear var(--wd) 1 normal none;
+    wwm-snap-on 8000ms linear 0ms 1 normal both,
+    wwm-blip 720ms linear var(--wd) 1 normal none;
 }
 .wwm-play .wwm-break1 {
   animation:
-    wwm-drop-early 2400ms linear 0ms 1 normal both,
-    wwm-blip 240ms linear var(--wd) 1 normal none;
+    wwm-drop-early 8000ms linear 0ms 1 normal both,
+    wwm-blip 720ms linear var(--wd) 1 normal none;
 }
 .wwm-play .wwm-break2 {
   animation:
-    wwm-drop-late 2400ms linear 0ms 1 normal both,
-    wwm-blip 240ms linear var(--wd) 1 normal none;
+    wwm-drop-late 8000ms linear 0ms 1 normal both,
+    wwm-blip 720ms linear var(--wd) 1 normal none;
 }
 .wwm-play .wwm-held {
   animation:
-    wwm-assert 2400ms linear 0ms 1 normal both,
-    wwm-blip 240ms linear var(--wd) 1 normal none;
+    wwm-assert 8000ms linear 0ms 1 normal both,
+    wwm-blip 720ms linear var(--wd) 1 normal none;
 }
 .wwm-play .wwm-noise {
-  animation: wwm-blip 240ms linear var(--wd) 1 normal none;
+  animation: wwm-blip 720ms linear var(--wd) 1 normal none;
 }
 @keyframes wwm-blip {
   0%,
@@ -191,56 +195,56 @@
 }
 @keyframes wwm-snap-on {
   0%,
-  37.4% {
+  44.9% {
     opacity: 0;
   }
-  37.5%,
+  45%,
   100% {
     opacity: 1;
   }
 }
 @keyframes wwm-drop-early {
   0%,
-  37.4% {
+  44.9% {
     opacity: 0;
   }
-  37.5%,
-  53% {
+  45%,
+  64.9% {
     opacity: 1;
   }
-  53.5%,
+  65%,
   100% {
     opacity: 0;
   }
 }
 @keyframes wwm-drop-late {
   0%,
-  37.4% {
+  44.9% {
     opacity: 0;
   }
-  37.5%,
-  59.5% {
+  45%,
+  71.9% {
     opacity: 1;
   }
-  60%,
+  72%,
   100% {
     opacity: 0;
   }
 }
 @keyframes wwm-assert {
   0%,
-  37.4% {
+  44.9% {
     opacity: 0;
   }
-  37.5%,
-  78.9% {
+  45%,
+  87.4% {
     opacity: 1;
   }
-  79%,
-  82.9% {
+  87.5%,
+  90.9% {
     opacity: 0;
   }
-  83%,
+  91%,
   100% {
     opacity: 1;
   }
@@ -289,6 +293,144 @@
   58%,
   100% {
     opacity: 0;
+  }
+}
+
+/* ——— the data-field motion system ——— */
+
+/* Rows sample into place the first time their group scrolls into view.
+   Rows are visible by default (no JS, reduced motion, already on screen
+   at load); SampleIn arms a group only after hydration, and plays it
+   once. */
+@keyframes field-sample {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.sample-set[data-armed] > * {
+  opacity: 0;
+}
+.sample-set[data-play] > * {
+  animation: field-sample 1.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.sample-set[data-play] > :nth-child(2) {
+  animation-delay: 220ms;
+}
+.sample-set[data-play] > :nth-child(3) {
+  animation-delay: 440ms;
+}
+.sample-set[data-play] > :nth-child(4) {
+  animation-delay: 660ms;
+}
+.sample-set[data-play] > :nth-child(5) {
+  animation-delay: 880ms;
+}
+.sample-set[data-play] > :nth-child(6) {
+  animation-delay: 1100ms;
+}
+.sample-set[data-play] > :nth-child(7) {
+  animation-delay: 1320ms;
+}
+.sample-set[data-play] > :nth-child(8) {
+  animation-delay: 1540ms;
+}
+
+/* Load-in: the hero's rows sample into place as the page opens, staggered
+   behind the mark's break (--ld per element). Pure CSS, so it runs with
+   or without JS; the reduced-motion kill below stills it. */
+.load-sample {
+  animation: field-sample 1.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--ld, 0ms);
+}
+
+/* The living signature. Idle: every glyph cell
+   blinks on its own seeded cycle (--p period, --d phase) and always
+   returns to the true grid — on-cells dip via pm-dip, off-cells blink on
+   via pm-ghost. Hover on the glyph or a .sig-hover ancestor runs the
+   scan: pixels fire once in column-major order (--i, 5ms steps) with
+   seeded jitter (--sj) and flick length (--sd), then hold. */
+@keyframes pm-dip {
+  0%,
+  1.4% {
+    opacity: 0.25;
+  }
+  1.5%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes pm-ghost {
+  0%,
+  1.1% {
+    opacity: 0.3;
+  }
+  1.2%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes pm-scan {
+  0%,
+  55% {
+    opacity: 0.15;
+  }
+  56%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes pm-scan-ghost {
+  0%,
+  55% {
+    opacity: 0.3;
+  }
+  56%,
+  100% {
+    opacity: 0;
+  }
+}
+.pm-dip {
+  animation: pm-dip var(--p) linear var(--d) infinite;
+}
+.pm-ghost {
+  animation: pm-ghost var(--p) linear var(--d) infinite;
+}
+.sig-hover:hover .pm .pm-on,
+.pm:hover .pm-on {
+  animation: pm-scan var(--sd) linear max(0ms, calc(var(--i) * 5ms + var(--sj)));
+}
+.sig-hover:hover .pm .pm-ghost,
+.pm:hover .pm-ghost {
+  animation: pm-scan-ghost var(--sd) linear
+    max(0ms, calc(var(--i) * 5ms + var(--sj)));
+}
+
+/* Hover on the footer lockup re-fires the small cut, bar by bar. Only
+   safe on marks without an entrance (wws-play) — swapping animations on
+   a played entrance would restart it on unhover. */
+.sig-hover:hover .wws rect:not(.wws-mid) {
+  animation: wws-rescan 160ms linear 0ms 1 normal backwards;
+}
+.sig-hover:hover .wws .wws-bar2 {
+  animation-delay: 60ms;
+}
+.sig-hover:hover .wws .wws-cap,
+.sig-hover:hover .wws .wws-base {
+  animation-delay: 120ms;
+}
+@keyframes wws-rescan {
+  0%,
+  45% {
+    opacity: 0.15;
+  }
+  46%,
+  100% {
+    opacity: 1;
   }
 }
 

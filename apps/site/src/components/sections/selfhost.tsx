@@ -1,4 +1,5 @@
 import { REPO_URL } from "@/lib/constants";
+import { SampleIn } from "@/components/sample-in";
 
 /**
  * Section 8 — self-host. The hero's secondary CTA ("self-host in 10
@@ -8,7 +9,7 @@ import { REPO_URL } from "@/lib/constants";
  */
 export function SelfHost() {
   return (
-    <section id="self-host" className="space-y-8 border-t rule-faint py-14">
+    <SampleIn as="section" id="self-host" className="space-y-8 border-t rule-faint py-14">
       <h2 className="t-title">self-host in 10 minutes</h2>
 
       <p className="t-prose">
@@ -22,7 +23,7 @@ export function SelfHost() {
         project, and vercel if you want it on the internet.
       </p>
 
-      <pre className="overflow-x-auto border rule-faint p-5">
+      <pre className="border rule-faint p-5 whitespace-pre-wrap [overflow-wrap:anywhere]">
         <code>{`$ git clone ${REPO_URL}.git
 $ cd where-we-were && pnpm install
 
@@ -42,12 +43,14 @@ $ www init "project name"`}</code>
       <div className="flex flex-wrap items-center gap-3">
         <a
           href={`${REPO_URL}#setup`}
-          className="inline-block border px-3.5 py-2.5 t-label hover:bg-foreground hover:text-background"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block border px-3.5 py-3 t-label hover:bg-foreground hover:text-background"
         >
           read the full setup on GitHub
         </a>
         <span className="t-label">MIT licensed</span>
       </div>
-    </section>
+    </SampleIn>
   );
 }

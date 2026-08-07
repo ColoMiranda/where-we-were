@@ -24,11 +24,11 @@ const ROLES: CellRole[] = [
 // Deterministic flicker order for the noise phase (ms). Hand-scattered so
 // the field reads as data writing, not a sweep.
 const BLIP_DELAY = [
-  390, 60, 540, 210, 480,
-  120, 600, 270, 30, 450,
-  180, 510, 0, 330, 570,
-  240, 90, 420, 660, 150,
-  300, 630, 360, 510, 90,
+  1560, 240, 2160, 840, 1920,
+  480, 2400, 1080, 120, 1800,
+  720, 2040, 0, 1320, 2280,
+  960, 360, 1680, 2640, 600,
+  1200, 2520, 1440, 2040, 360,
 ];
 
 export function BrandMark({

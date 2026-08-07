@@ -1,16 +1,19 @@
 import Image from "next/image";
+import { SampleIn } from "@/components/sample-in";
 
 /**
  * "The viewer" (brief §5 item 6): the living status note, the "waiting on
  * you" blocker strip (options + a recommendation, answerable from your
- * phone), and the idea bag sitting next to project status. A real
- * screenshot lands at /viewer-board.png later — referenced here, not
- * created or flagged missing.
+ * phone), and the idea bag sitting next to project status. The real
+ * board screenshot lives at public/viewer-board.png.
  */
 export function Viewer() {
   return (
-    <section aria-labelledby="viewer-heading" className="border-t rule-faint py-14">
-      <p className="t-label mb-4">the viewer</p>
+    <SampleIn
+      as="section"
+      ariaLabelledby="viewer-heading"
+      className="border-t rule-faint py-14"
+    >
       <h2 id="viewer-heading" className="t-title mb-6">
         everything you parked, one board
       </h2>
@@ -45,6 +48,6 @@ export function Viewer() {
           idea bag
         </figcaption>
       </figure>
-    </section>
+    </SampleIn>
   );
 }
