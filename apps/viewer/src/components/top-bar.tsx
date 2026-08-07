@@ -36,7 +36,7 @@ export function TopBar() {
       <div className="mx-auto flex w-full max-w-3xl items-stretch px-6">
         <Link
           href="/"
-          className="sig-hover flex items-center gap-2 py-4 pr-4"
+          className="-ml-3 sig-hover flex items-center gap-2 py-4 pl-3 pr-4"
           aria-label="where we were — board"
         >
           <BrandMarkSmall size={16} animate={play} />
@@ -55,10 +55,10 @@ export function TopBar() {
                 key={href}
                 href={href}
                 aria-current={active ? "page" : undefined}
-                className={`t-label flex items-center border-l px-2.5 sm:px-5 ${
+                className={`t-label flex items-center border-l px-2.5 sm:px-5 max-[359px]:px-1.5 ${
                   active
                     ? "inverted bg-foreground text-background"
-                    : "hover:bg-foreground hover:text-background"
+                    : "hover:bg-foreground hover:text-background active:bg-foreground active:text-background"
                 }`}
               >
                 {label}
@@ -69,7 +69,7 @@ export function TopBar() {
           <form action={logout} className="flex items-stretch">
             <button
               type="submit"
-              className="t-label flex items-center border-l px-2.5 hover:bg-foreground hover:text-background sm:px-5"
+              className="t-label flex items-center border-l px-2.5 hover:bg-foreground hover:text-background active:bg-foreground active:text-background sm:px-5 max-[359px]:px-1.5"
             >
               OUT
             </button>

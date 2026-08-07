@@ -64,7 +64,7 @@ export function ThemeToggle() {
         type="button"
         onClick={() => writeTheme(next)}
         aria-label={`Theme: ${theme}. Switch to ${next}`}
-        className="t-label flex items-center border-l px-3 hover:bg-foreground hover:text-background sm:hidden"
+        className="t-label flex items-center border-l px-3 hover:bg-foreground hover:text-background active:bg-foreground active:text-background max-[359px]:px-1.5 sm:hidden"
       >
         {theme}
       </button>
@@ -82,7 +82,7 @@ export function ThemeToggle() {
             className={`t-label border-l px-4 ${
               theme === t
                 ? "inverted bg-foreground text-background"
-                : "hover:bg-foreground hover:text-background"
+                : "hover:bg-foreground hover:text-background active:bg-foreground active:text-background"
             }`}
           >
             {t}
