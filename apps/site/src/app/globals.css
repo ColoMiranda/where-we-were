@@ -1,0 +1,146 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted-ink: var(--muted-ink);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --font-mono: var(--font-martian), ui-monospace, Menlo, monospace;
+  --font-sans: var(--font-martian), ui-monospace, Menlo, monospace;
+}
+
+/*
+  where we were — soft duotone tokens, ported from apps/viewer/src/app/
+  globals.css (the "quiet data field" system; DESIGN.md is binding). This
+  is a static marketing page: only the token layer, base rules, and the
+  type/texture utilities every section needs are ported. Viewer-only
+  motion (field-sample entrance, theme cross-fade, the pixel-map living
+  signature, view-transition zoom morph) is deliberately left out — this
+  page has no live data and no signature glyphs to animate.
+  Theme resolution: :root carries dark; [data-theme="light"] overrides;
+  with no data-theme attribute the system preference decides.
+*/
+:root {
+  --background: #111214;
+  --foreground: #ededea;
+  --muted-ink: #a3a6ad;
+  /* Cobalt: the one hue. It means a decision waits on you, and it carries
+     interaction feedback (focus, caret, selection). Nothing else is colored.
+     On a marketing page that means: almost nowhere, never decoration. */
+  --accent: oklch(0.68 0.17 265);
+  --accent-ink: #111214;
+  --border: #ededea;
+  --ring: var(--accent);
+  --rule-faint: rgb(255 255 255 / 0.16);
+  --bar-faint: rgb(255 255 255 / 0.28);
+}
+
+:root[data-theme="light"] {
+  --background: #f6f5f2;
+  --foreground: #1b1c1e;
+  --muted-ink: #5c5f66;
+  --accent: oklch(0.47 0.21 265);
+  --accent-ink: #f6f5f2;
+  --border: #1b1c1e;
+  --ring: var(--accent);
+  --rule-faint: rgb(0 0 0 / 0.14);
+  --bar-faint: rgb(0 0 0 / 0.2);
+}
+
+/* data-theme is always stamped: "dark" by the server, corrected pre-paint
+   by the head script (AUTO resolves via matchMedia). No-JS default: dark. */
+
+@layer base {
+  * {
+    @apply border-border;
+    border-radius: 0;
+  }
+  html {
+    @apply font-mono;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  ::selection {
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+}
+
+/* Label voice: small tracked caps. Section headers, nav links, button
+   labels, kickers. */
+@utility t-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* Data voice: tabular numerics, demoted ink. Counts, timestamps, tags. */
+@utility t-data {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  text-transform: uppercase;
+  color: var(--muted-ink);
+}
+
+/* Title voice: page-level headlines (DESIGN.md typography.title). Not in
+   apps/viewer/globals.css as a utility — the viewer hand-rolls it per h1 —
+   but the site's hero and section heads want it named and reusable. */
+@utility t-title {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+}
+
+/* Headline voice: a smaller bold register, one step down from title
+   (DESIGN.md typography.headline). */
+@utility t-headline {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+/* Prose voice: the "read this closely" register — sentence case, relaxed
+   leading, capped measure (DESIGN.md typography.prose). Body's own
+   defaults (14px/1.7) live on the <body> selector above; reach for this
+   utility when a passage should read at the prose size instead. */
+@utility t-prose {
+  font-size: 15px;
+  line-height: 1.75;
+  max-width: 62ch;
+}
+
+/* Faint structural rule (texture, never text) — dividers, hairline
+   borders between sections. */
+@utility rule-faint {
+  border-color: var(--rule-faint);
+}
+
+/* Faint structural fill (texture, never text) — the non-text counterpart
+   to rule-faint, for skeleton bars or quiet fill blocks. */
+@utility bar-faint {
+  background-color: var(--bar-faint);
+}
+
+/* Reduced motion holds a single still. Declared globally so any motion a
+   section adds later is killed by default, per the Earned-Motion Rule. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
