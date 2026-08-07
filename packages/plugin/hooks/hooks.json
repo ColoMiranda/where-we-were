@@ -1,0 +1,16 @@
+{
+  "description": "www parking nudge — opt-in (WWW_STOP_NUDGE=1), once per session, registered repos only",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "www hook stop",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}

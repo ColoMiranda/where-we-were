@@ -1,0 +1,13 @@
+{
+  "name": "where-we-were",
+  "owner": {
+    "name": "Marcos Miranda"
+  },
+  "plugins": [
+    {
+      "name": "www",
+      "source": "./",
+      "description": "where we were — parks unfinished work and why it stopped, so the next session picks up cold."
+    }
+  ]
+}

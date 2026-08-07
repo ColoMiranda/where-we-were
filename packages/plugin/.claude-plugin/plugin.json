@@ -1,0 +1,8 @@
+{
+  "name": "www",
+  "description": "where we were — parks unfinished work and why it stopped, so the next session picks up cold. Bundles the www skill and an optional once-per-session Stop-hook parking nudge (opt-in: WWW_STOP_NUDGE=1). Requires the www CLI on PATH.",
+  "version": "0.2.0",
+  "author": {
+    "name": "Marcos Miranda"
+  }
+}

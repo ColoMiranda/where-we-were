@@ -7,8 +7,9 @@ description: >-
   these happen: a session starts and you want to know what was parked; the user
   says "where were we", "pick up where we left off", or "what's left here"; you
   discover work you're not doing now; you hit a decision only the user can
-  make; a session is ending with unfinished work; the Claude Code Stop hook
-  nudges you to park residue; or you finish a parked task. Also use it when the
+  make; a session is ending with unfinished work; the user says "park it" or
+  "we're done"; a Stop hook nudges you to park residue; or you finish a parked
+  task. Also use it when the
   user asks to add, save, park, list, or complete www tasks directly.
 ---
 
@@ -70,8 +71,12 @@ answers from the board; `--clear-blocker` removes a blocker once resolved.
 
 ### 4. Session end — park the residue
 
-The Stop hook nudges you in registered repos. Judge honestly: is there real
-unfinished residue? **If nothing real is left, stop — don't save junk.** A
+Parking is explicit by default: when the user says "park it", "we're done",
+or the session is clearly wrapping up with unfinished work, park the residue.
+(Users who want an automatic reminder can set `WWW_STOP_NUDGE=1` in
+`~/.config/www/.env` — then a Stop hook nudges once per session.)
+
+Judge honestly: is there real unfinished residue? **If nothing real is left, stop — don't save junk.** A
 board full of noise is worse than an empty one.
 
 If there is residue:
