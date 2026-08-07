@@ -45,16 +45,16 @@ export function Pieces() {
 
       <SampleIn as="div">
         <div className="rule-faint border-b py-6 first:pt-0 sig-hover">
-          <p className="t-label mb-2 flex items-center gap-3">
+          <h3 className="t-headline mb-2 flex items-center gap-3">
             <PixelMap
               id="www — the cli"
               cols={16}
               rows={4}
-              cell={4}
+              cell={5}
               className="text-muted-ink"
             />
             www — the cli
-          </p>
+          </h3>
           <p className="t-prose">
             <code>init</code>, <code>add</code>, <code>save</code>,{" "}
             <code>list</code>, <code>done</code>. writes go straight to
@@ -63,32 +63,32 @@ export function Pieces() {
           </p>
         </div>
         <div className="rule-faint border-b py-6 sig-hover">
-          <p className="t-label mb-2 flex items-center gap-3">
+          <h3 className="t-headline mb-2 flex items-center gap-3">
             <PixelMap
               id="the viewer"
               cols={16}
               rows={4}
-              cell={4}
+              cell={5}
               className="text-muted-ink"
             />
             the viewer
-          </p>
+          </h3>
           <p className="t-prose">
             a board of your projects: living status notes, an idea bag, and
             a strip of blockers you answer from your phone.
           </p>
         </div>
         <div className="py-6 pb-0 sig-hover">
-          <p className="t-label mb-2 flex items-center gap-3">
+          <h3 className="t-headline mb-2 flex items-center gap-3">
             <PixelMap
               id="the hook + skill"
               cols={16}
               rows={4}
-              cell={4}
+              cell={5}
               className="text-muted-ink"
             />
             the hook + skill
-          </p>
+          </h3>
           <p className="t-prose">
             a Claude Code Stop hook nudges the agent to park what&rsquo;s
             real before the session ends; an Agent Skill teaches it the
