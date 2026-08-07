@@ -38,8 +38,8 @@ export function CopyPrompt() {
       <p className="t-prose">
         picking a parked task back up is one copy and one paste. no
         plugin, no MCP, no protocol to speak first — nothing to install
-        on the receiving side. it works in a bare claude.ai text box
-        just as well as claude code or cursor.
+        on the receiving side. any coding agent that can see your repo
+        can take it from there.
       </p>
       <p className="t-prose mt-4">
         the prompt carries what&apos;s left, the decisions already made,

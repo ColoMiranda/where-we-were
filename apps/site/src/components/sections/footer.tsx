@@ -5,7 +5,7 @@ import { REPO_URL } from "@/lib/constants";
 /**
  * Section 9 — footer. The static lockup (small-cut mark + wordmark) opens
  * it, then the proof line, MIT, GithubMark linking to the repo, and a
- * pointer for Claude Code users to the Agent Skill. Hovering the lockup
+ * pointer to the agent skill for whatever agent the visitor runs. Hovering the lockup
  * re-fires the small cut bar by bar. No signup, no waitlist, no
  * hosted-service implication.
  */
@@ -17,7 +17,7 @@ export function Footer() {
         <span className="t-label font-bold tracking-[0.22em]">WHERE WE WERE</span>
       </div>
 
-      <p>built with Claude Code. used daily by its author.</p>
+      <p>built with agents. used daily by its author.</p>
 
       <div className="flex flex-wrap items-center gap-3">
         <a
@@ -33,7 +33,7 @@ export function Footer() {
       </div>
 
       <p>
-        using claude code? the agent skill at{" "}
+        want your agent to run the workflow itself? the skill at{" "}
         <a
           href={`${REPO_URL}/tree/main/skills/www`}
           target="_blank"

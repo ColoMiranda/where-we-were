@@ -90,9 +90,9 @@ export function Pieces() {
             the hook + skill
           </h3>
           <p className="t-prose">
-            a Claude Code Stop hook nudges the agent to park what&rsquo;s
-            real before the session ends; an Agent Skill teaches it the
-            whole workflow.
+            a hook nudges the agent to park what&rsquo;s real before the
+            session ends; a skill teaches it the whole workflow. both
+            plug into whatever agent you run.
           </p>
         </div>
       </SampleIn>
