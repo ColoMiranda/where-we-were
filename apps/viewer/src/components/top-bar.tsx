@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { BrandMarkSmall } from "@/components/brand-mark";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { logout } from "@/app/login/actions";
 
@@ -23,6 +25,13 @@ function dateIndex() {
 
 export function TopBar() {
   const pathname = usePathname();
+  const [play, setPlay] = useState(false);
+
+  useEffect(() => {
+    if (sessionStorage.getItem("wwm-played")) return;
+    sessionStorage.setItem("wwm-played", "1");
+    queueMicrotask(() => setPlay(true));
+  }, []);
 
   if (pathname === "/login") {
     return null;
@@ -33,10 +42,11 @@ export function TopBar() {
       <div className="mx-auto flex w-full max-w-3xl items-stretch px-6">
         <Link
           href="/"
-          className="flex items-center py-4 pr-4"
+          className="flex items-center gap-2 py-4 pr-4"
           aria-label="where we were — board"
         >
-          <span className="t-label font-bold whitespace-nowrap tracking-[0.18em] sm:tracking-[0.22em]">
+          <BrandMarkSmall size={16} animate={play} />
+          <span className="t-label hidden font-bold whitespace-nowrap tracking-[0.22em] sm:inline">
             WHERE WE WERE
           </span>
         </Link>

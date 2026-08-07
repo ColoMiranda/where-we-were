@@ -1,3 +1,4 @@
+import { BrandMark } from "@/components/brand-mark";
 import { GithubMark } from "@/components/github-mark";
 import { REPO_URL } from "@/lib/constants";
 
@@ -5,11 +6,15 @@ import { REPO_URL } from "@/lib/constants";
  * Hero — kicker, the confirmed git-line headline, sub-line, a mechanism
  * one-liner (not "works with any agent" boilerplate — the receiving side
  * needs nothing installed, per WEBSITE-BRIEF §10), and the two CTAs. Type
- * carries the whole section; no imagery, no signature glyph.
+ * carries the whole section; the brand mark now opens the hero and plays
+ * its break-once entrance (decision of 2026-08-07, supersedes
+ * WEBSITE-BRIEF §10 on this point).
  */
 export function Hero() {
   return (
     <section className="pt-20 pb-16 sm:pt-28 sm:pb-20">
+      <BrandMark size={112} animate className="mb-10" />
+
       <p className="t-label">www — where we were</p>
 
       <h1 className="mt-6 text-[28px] sm:text-[40px] font-bold leading-[1.2]">

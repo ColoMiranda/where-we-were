@@ -18,8 +18,9 @@
   is a static marketing page: only the token layer, base rules, and the
   type/texture utilities every section needs are ported. Viewer-only
   motion (field-sample entrance, theme cross-fade, the pixel-map living
-  signature, view-transition zoom morph) is deliberately left out — this
-  page has no live data and no signature glyphs to animate.
+  signature, view-transition zoom morph) is deliberately left out, with
+  one exception: the brand mark's entrance (wwm/wws below), the page's
+  single authored motion moment.
   Theme resolution: :root carries dark; [data-theme="light"] overrides;
   with no data-theme attribute the system preference decides.
 */
@@ -132,6 +133,163 @@
    to rule-faint, for skeleton bars or quiet fill blocks. */
 @utility bar-faint {
   background-color: var(--bar-faint);
+}
+
+/* The brand mark — "the break, told once". The 5×5 field flickers alive
+   (wwm-blip, per-cell --wd delay), snaps whole at 900ms, then the third
+   column breaks: two cells drop, one holds the baseline and asserts
+   itself with a single blink. Cells are only ever on or off; the
+   reduced-motion kill below stills everything to the finished mark. */
+.wwm rect {
+  fill: currentColor;
+  opacity: 0;
+}
+.wwm .wwm-on,
+.wwm .wwm-held {
+  opacity: 1;
+}
+.wwm-play .wwm-on {
+  animation:
+    wwm-snap-on 2400ms linear 0ms 1 normal both,
+    wwm-blip 240ms linear var(--wd) 1 normal none;
+}
+.wwm-play .wwm-break1 {
+  animation:
+    wwm-drop-early 2400ms linear 0ms 1 normal both,
+    wwm-blip 240ms linear var(--wd) 1 normal none;
+}
+.wwm-play .wwm-break2 {
+  animation:
+    wwm-drop-late 2400ms linear 0ms 1 normal both,
+    wwm-blip 240ms linear var(--wd) 1 normal none;
+}
+.wwm-play .wwm-held {
+  animation:
+    wwm-assert 2400ms linear 0ms 1 normal both,
+    wwm-blip 240ms linear var(--wd) 1 normal none;
+}
+.wwm-play .wwm-noise {
+  animation: wwm-blip 240ms linear var(--wd) 1 normal none;
+}
+@keyframes wwm-blip {
+  0%,
+  32% {
+    opacity: 1;
+  }
+  33%,
+  54% {
+    opacity: 0;
+  }
+  55%,
+  80% {
+    opacity: 1;
+  }
+  81%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes wwm-snap-on {
+  0%,
+  37.4% {
+    opacity: 0;
+  }
+  37.5%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes wwm-drop-early {
+  0%,
+  37.4% {
+    opacity: 0;
+  }
+  37.5%,
+  53% {
+    opacity: 1;
+  }
+  53.5%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes wwm-drop-late {
+  0%,
+  37.4% {
+    opacity: 0;
+  }
+  37.5%,
+  59.5% {
+    opacity: 1;
+  }
+  60%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes wwm-assert {
+  0%,
+  37.4% {
+    opacity: 0;
+  }
+  37.5%,
+  78.9% {
+    opacity: 1;
+  }
+  79%,
+  82.9% {
+    opacity: 0;
+  }
+  83%,
+  100% {
+    opacity: 1;
+  }
+}
+
+/* The small cut (below-32px geometry): bars draw in left to right, then
+   the third bar's middle erodes — the break at glance size. */
+.wws rect {
+  fill: currentColor;
+}
+.wws .wws-mid {
+  opacity: 0;
+}
+.wws-play .wws-bar1 {
+  animation: wws-in 1200ms linear 0ms 1 normal both;
+}
+.wws-play .wws-bar2 {
+  animation: wws-in 1200ms linear 120ms 1 normal both;
+}
+.wws-play .wws-cap,
+.wws-play .wws-base {
+  animation: wws-in 1200ms linear 240ms 1 normal both;
+}
+.wws-play .wws-mid {
+  animation: wws-erode 1200ms linear 0ms 1 normal both;
+}
+@keyframes wws-in {
+  0%,
+  1.9% {
+    opacity: 0;
+  }
+  2%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes wws-erode {
+  0%,
+  19% {
+    opacity: 0;
+  }
+  20%,
+  57% {
+    opacity: 1;
+  }
+  58%,
+  100% {
+    opacity: 0;
+  }
 }
 
 /* Reduced motion holds a single still. Declared globally so any motion a
