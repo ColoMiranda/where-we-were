@@ -7,6 +7,7 @@ node_modules/
 
 # internal working docs — local only
 .impeccable/
+/CLAUDE.md
 PRODUCT.md
 MONETIZATION.md
 DESIGN.md
