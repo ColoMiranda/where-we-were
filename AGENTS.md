@@ -9,16 +9,16 @@
 - Viewer (the board): `pnpm --filter viewer dev` / `build` / `lint`. Needs `apps/viewer/.env.local` with `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
 - Site (public marketing page): `pnpm --filter site dev` / `build` / `lint`. No backend.
 - CLI: `node packages/cli/src/bin.ts <cmd>` or the linked `www` bin. Config: `WWW_DATABASE_URL` env var, falling back to `~/.config/www/.env`.
-- Typecheck from inside a package: `cd packages/cli && pnpm exec tsc --noEmit`. There is no root-level tsc and no test suite.
+- Typecheck from inside a package: `cd packages/cli && pnpm exec tsc --noEmit`. There is no root-level tsc. The only tests are the plugin's: `claude plugin validate packages/plugin` and `claude plugin test packages/plugin`.
 
 ## Architecture
 
 Five workspace packages around one Postgres (the user's own Supabase project):
 
 - `packages/cli` — the `www` binary. `src/bin.ts` is a flat command dispatcher; each command is one function in `src/commands/`. Talks **directly to Postgres** with `pg` over the Supabase transaction pooler — the connection string must carry `uselibpqcompat=true&sslmode=require`, because pg v8 treats plain `sslmode=require` as full cert verification, which the pooler fails.
-- `apps/viewer` — the board. Next.js App Router: server components fetch through `src/lib/data.ts`, mutations are server actions in `src/lib/actions.ts`, copy-as-prompt is built in `src/lib/prompt.ts`, Supabase clients live in `src/lib/supabase/`. Auth is email + password via supabase-js; RLS policies (migration `0002`) scope every row to the owner's email, so the anon key exposes nothing to anyone else.
+- `apps/viewer`: the board. Next.js App Router: server components fetch through `src/lib/data.ts`, mutations are server actions in `src/lib/actions.ts`, copy-as-prompt comes from `taskToPrompt` in `@www/shared` (the CLI prints the same text with `www prompt <id>`), Supabase clients live in `src/lib/supabase/`. Auth is email + password via supabase-js; RLS policies (migration `0002`) scope every row to the owner's email, so the anon key exposes nothing to anyone else.
 - `packages/shared` — `@www/shared`: the domain types, slug/remote normalization, and row→object mapping used by both CLI and viewer. Exports raw `.ts` (`"." → ./src/index.ts`); Node strips types for the CLI, Next transpiles it for the viewer.
-- `packages/plugin` — Claude Code plugin bundling the `www` skill (`skills/www/SKILL.md`) and an opt-in (`WWW_STOP_NUDGE=1`), once-per-session Stop hook (`www hook stop`). Requires the `www` bin on PATH.
+- `packages/plugin`: Claude Code plugin bundling the `www` skill (`skills/www/SKILL.md`), `/wrap` (`commands/wrap.md`), and the www mod (`hooks/register.tsx`: start band with pick-up, system prompt context, `/idea` and `/todo`, save on close). Requires the `www` bin on PATH.
 - `apps/site` — static marketing page. No data dependencies.
 
 Cross-cutting behavior worth knowing before editing:
