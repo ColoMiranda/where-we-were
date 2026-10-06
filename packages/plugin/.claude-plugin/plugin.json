@@ -1,8 +1,17 @@
 {
   "name": "www",
-  "description": "where we were — parks unfinished work and why it stopped, so the next session picks up cold. Bundles the www skill and an optional once-per-session Stop-hook parking nudge (opt-in: WWW_STOP_NUDGE=1). Requires the www CLI on PATH.",
-  "version": "0.2.0",
+  "description": "where we were: parks unfinished work and why it stopped, so the next session picks up cold. A start band offers the project's open tasks (press 1 to 3 to fill the prompt), the system prompt carries the project's state, /idea and /todo capture with no model turn, and a background job parks what is left when the session closes. Bundles the www skill and /wrap. Requires the www CLI on PATH.",
+  "version": "0.3.0",
   "author": {
     "name": "Marcos Miranda"
+  },
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "closeJob": {
+      "type": "boolean",
+      "title": "Park on close",
+      "description": "When a session in a www project ends with work it did not park, a background Sonnet run parks it (about $0.05 a close at list prices).",
+      "default": true
+    }
   }
 }

@@ -6,7 +6,7 @@ allowed-tools: Bash, Skill, AskUserQuestion
 
 # /wrap — close the session cleanly
 
-The end-of-session flow, run on purpose. The Stop-hook nudge catches what you
+The end-of-session flow, run on purpose. The www close job catches what you
 forget; this is what you type when you know you're done. Park the residue,
 surface the work that would be lost, confirm it's safe to quit.
 
@@ -71,13 +71,6 @@ UNPUSHED     2 commits on main
 BG JOBS      none
 
 → safe to quit (Ctrl+D)
-```
-
-Then spend the Stop hook's once-per-session nudge, so it doesn't turn around and
-ask you to park what you just parked:
-
-```sh
-touch "${TMPDIR:-/tmp}/www-nudge-$CLAUDE_CODE_SESSION_ID"
 ```
 
 ## The quit is the user's

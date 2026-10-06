@@ -93,8 +93,13 @@ export async function save(argv: string[]): Promise<void> {
       columns.title = values.title;
     }
     if (values.priority !== undefined) columns.priority = Number(values.priority);
+    // The label names the session of the last park (a context save or a
+    // blocker), so a park without one clears it: a "parked on close" tag
+    // never outlives a later park by someone else.
     if (values["session-label"] !== undefined) {
       columns.session_label = values["session-label"];
+    } else if (contextFlagged || values["blocker-question"] !== undefined) {
+      columns.session_label = null;
     }
 
     if (contextFlagged) {

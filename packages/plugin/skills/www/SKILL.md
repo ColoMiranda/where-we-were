@@ -8,8 +8,8 @@ description: >-
   says "where were we", "pick up where we left off", or "what's left here"; you
   discover work you're not doing now; you hit a decision only the user can
   make; a session is ending with unfinished work; the user says "park it" or
-  "we're done"; a Stop hook nudges you to park residue; or you finish a parked
-  task. Also use it when the
+  "we're done"; the www close job asks you to park residue; or you finish a
+  parked task. Also use it when the
   user asks to add, save, park, list, or complete www tasks directly.
 ---
 
@@ -38,6 +38,10 @@ www list
 Shows open tasks for this project (`--all` includes done; `--status <s>`
 filters; statuses: `idea`, `todo`, `in-progress`, `blocked-needs-decision`,
 `parked-with-context`, `done`).
+
+With the www mod, the start band and the system prompt already show the open
+tasks. Run `www list` when you need more. `www prompt <id>` prints one task as
+a prompt.
 
 If you pick up a parked task, **re-validate its context before acting**: the
 saved repo/branch/sha describe the moment it was parked, and the repo has
@@ -71,10 +75,14 @@ answers from the board; `--clear-blocker` removes a blocker once resolved.
 
 ### 4. Session end — park the residue
 
-Parking is explicit by default: when the user says "park it", "we're done",
-or the session is clearly wrapping up with unfinished work, park the residue.
-(Users who want an automatic reminder can set `WWW_STOP_NUDGE=1` in
-`~/.config/www/.env` — then a Stop hook nudges once per session.)
+Park on purpose: when the user says "park it", "we're done", or the session
+is clearly wrapping up with unfinished work, park the residue. `/wrap` is the
+deliberate way to close. As a safety net, the www mod's close job parks what
+a session leaves unparked when it ends (on by default; the plugin's "Park on
+close" setting turns it off).
+
+When you run as the close job, pass `--session-label "parked on close"` on
+every save, and never edit files, commit, or push.
 
 Judge honestly: is there real unfinished residue? **If nothing real is left, stop — don't save junk.** A
 board full of noise is worse than an empty one.
