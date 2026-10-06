@@ -89,7 +89,7 @@ The mod acts only in registered repos. It does five things:
 - **Save on close.** It fires when an interactive session ends (exit, terminal close, or `/clear`) after file edits (edit tools, or shell commands that write files) or 3 or more prompts you sent, with no park and no `/wrap` after them. A park is a `www save` with `--next-step`, `--status-note` or `--blocker-question`; filing a side task with `www add` is not one. The mod then starts a detached, lean `claude -p` job on Sonnet. Its input is the end of the chat (your prompts and Claude's replies, tool calls left out, about 30,000 characters at most) and the open tasks. Its system prompt is a short role plus the www skill. It loads no settings (so no CLAUDE.md, hooks or plugins), skills or MCP servers. It may run only `www` commands, read-only git, and Read, for at most 6 turns. It judges whether real work is left, and saves it with `--session-label "parked on close"` or saves nothing. A close costs about $0.05 to $0.07 at list prices (measured; on a Claude subscription it comes out of your usage limits). Its JSON output goes to `$TMPDIR/www-close-<session>.json`. A hard kill (`kill -9`, power loss) sends no event, so no job runs then. It is on by default; turn it off with the plugin's "Park on close" setting in `/config`.
 - **Parked on close.** The next start band marks tasks the close job saved with "parked on close".
 
-The old `www hook stop` command now does nothing. If you added its Stop entry to `~/.claude/settings.json`, you can remove it.
+The old `www hook stop` command is gone. If you added its Stop entry to `~/.claude/settings.json`, remove it.
 
 ### 5. Teach your agents (Claude Code skill)
 

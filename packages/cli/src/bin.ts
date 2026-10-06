@@ -36,10 +36,6 @@ const commands: Record<string, (argv: string[]) => Promise<void>> = {
   done,
   project,
   prompt,
-  // Retired: the Stop-hook nudge moved into the plugin's mod (save on close).
-  // Kept as a silent no-op, so an old `www hook stop` entry in
-  // ~/.claude/settings.json never errors at the end of a turn.
-  hook: async () => {},
 };
 
 const [, , cmd, ...rest] = process.argv;
