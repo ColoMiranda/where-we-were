@@ -1,14 +1,13 @@
 import { atom, read, update } from 'claude-code'
 import type { EngineInterface, Register } from 'claude-code'
 
-import type { WwwBand, WwwCloseWatch, WwwContext } from '../types'
+import type { WwwBand, WwwCloseWatch } from '../types'
 import { bandTasks, captureAnswer, chatExcerpt, closeJobArgv, closeJobInput, contextText, EDIT_TOOLS, errorLine, fit, isShellWrite, isWwwPark, loaded, parentDirs, rowTail, shouldPark } from './parse'
 import type { Loaded, Ran } from './parse'
 
 const band = atom({ plugin: 'www', key: 'band' } as const, null as WwwBand | null)
 const taskKeys = atom({ plugin: 'www', key: 'taskKeys' } as const, 0)
 const closeWatch = atom({ plugin: 'www', key: 'closeWatch' } as const, { isInteractive: false, isRegistered: false, edits: 0, prompts: 0 } as WwwCloseWatch)
-const context = atom({ plugin: 'www', key: 'context' } as const, null as WwwContext | null)
 
 const RUN_MS = 20_000
 // The transcript's tail the close job's excerpt is cut from: the last
@@ -25,6 +24,10 @@ let lastLoaded: Loaded | undefined
 // Set once a prompt is sent or the session did not start fresh, so a slow
 // start-up run never brings the band back.
 let isBandClosed = false
+// The system prompt section, fixed for one session at its first request so
+// the prompt cache holds; `text` null: no section. A hot reload (development
+// only) computes it once more.
+let context: { sessionId: string; text: string | null } | undefined
 
 // A `www` run; undefined when it could not start (no `www` on PATH) or timed out.
 async function run($: EngineInterface, argv: string[]): Promise<Ran> {
@@ -117,12 +120,10 @@ async function capture($: EngineInterface, args: string, isIdea: boolean): Promi
 // the prompt cache holds.
 async function contextFor($: EngineInterface): Promise<string | null> {
   const sessionId = await $.session.id()
-  const kept = await read($, context)
-  if (kept?.sessionId === sessionId) return kept.text
+  if (context?.sessionId === sessionId) return context.text
   const found = await Promise.race([load($), $.clock.sleep(CONTEXT_WAIT_MS).then(() => undefined)])
-  const text = found?.kind === 'project' ? contextText(found.project, found.tasks) : null
-  await update($, context, () => ({ sessionId, text }))
-  return text
+  context = { sessionId, text: found?.kind === 'project' ? contextText(found.project, found.tasks) : null }
+  return context.text
 }
 
 export const register: Register = (on, options) => {

@@ -42,7 +42,7 @@ describe('parse', () => {
     const found = loaded(ok(JSON.stringify(PROJECT)), ok(JSON.stringify(TASKS)))
     expect(found.kind).toBe('project')
     if (found.kind === 'project') {
-      expect(found.project).toEqual({ id: 'where-we-were', name: 'where we were', statusNote: 'Database recreated. Next: the mod.' })
+      expect([found.project.id, found.project.name, found.project.statusNote]).toEqual(['where-we-were', 'where we were', 'Database recreated. Next: the mod.'])
       expect(found.tasks.map(one => one.id.slice(0, 8))).toEqual(['a204689c', 'b10c0000', 'f5fbb7d4', 'c0ffee00'])
     }
     expect(loaded(fail('www: Not a registered project. www init <name> to register.'), ok('[]'))).toEqual({ kind: 'none' })

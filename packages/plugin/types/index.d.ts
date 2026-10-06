@@ -25,10 +25,6 @@ export type WwwCloseWatch = {
   transcriptPath?: string
 }
 
-// The system prompt section, fixed for one session at its first request so
-// the prompt cache holds; `text` null: no section this session.
-export type WwwContext = { sessionId: string; text: string | null }
-
 declare module 'claude-code' {
   interface PluginState {
     www: {
@@ -38,7 +34,6 @@ declare module 'claude-code' {
       // starts its own keys after them.
       taskKeys: number
       closeWatch: WwwCloseWatch
-      context: WwwContext | null
     }
   }
 }

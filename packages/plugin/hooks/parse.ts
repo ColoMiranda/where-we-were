@@ -10,8 +10,6 @@ export const EDIT_TOOLS: ReadonlySet<string> = new Set(['Edit', 'Write', 'MultiE
 export const CLOSE_TOOLS = ['Bash(www:*)', 'Bash(git status:*)', 'Bash(git diff:*)', 'Bash(git log:*)', 'Read']
 // The close job's turn cap: a park takes two or three (add, save, the answer).
 export const MAX_CLOSE_TURNS = 6
-// The close job's model: a fresh run over a short input, so no chat cache to keep.
-export const CLOSE_MODEL = 'sonnet'
 
 // A finished `www ...` run, as $.process.run resolves it; undefined when it
 // could not start (no `www` on PATH) or timed out.
@@ -34,20 +32,6 @@ function parseJson(text: string): unknown {
   }
 }
 
-const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null
-
-function asProject(value: unknown): ListedProject | undefined {
-  if (!isRecord(value) || typeof value.id !== 'string' || typeof value.name !== 'string') return undefined
-  return { id: value.id, name: value.name, statusNote: typeof value.statusNote === 'string' ? value.statusNote : '' }
-}
-
-function asTask(value: unknown): ListedTask | undefined {
-  if (!isRecord(value)) return undefined
-  const { id, title, status, priority, lastTouched, sessionLabel } = value
-  if (typeof id !== 'string' || typeof title !== 'string' || typeof status !== 'string' || typeof priority !== 'number' || typeof lastTouched !== 'string') return undefined
-  return { id, title, status, priority, lastTouched, ...(typeof sessionLabel === 'string' ? { sessionLabel } : {}) }
-}
-
 // One line for the band out of the CLI's stderr ("www: <message>").
 export function errorLine(stderr: string): string {
   if (/could not reach the database/i.test(stderr)) return 'www: cannot reach the database. The board is offline.'
@@ -63,12 +47,13 @@ export function loaded(project: Ran, list: Ran): Loaded {
   if (project.exitCode !== 0) {
     return /not a registered project/i.test(project.stderr) ? { kind: 'none' } : { kind: 'error', message: errorLine(project.stderr) }
   }
-  const found = asProject(parseJson(project.stdout))
+  // Our own CLI's JSON (same folder, same version): read as is.
+  const found = parseJson(project.stdout) as ListedProject | undefined
   if (found === undefined) return { kind: 'error', message: 'www: www project gave output the mod cannot read.' }
   if (list === undefined || list.exitCode !== 0) return { kind: 'error', message: errorLine(list?.stderr ?? '') }
   const tasks = parseJson(list.stdout)
   if (!Array.isArray(tasks)) return { kind: 'error', message: 'www: www list gave output the mod cannot read.' }
-  return { kind: 'project', project: found, tasks: tasks.map(asTask).filter(task => task !== undefined) }
+  return { kind: 'project', project: found, tasks: tasks as ListedTask[] }
 }
 
 // The band's rows: blocked tasks first, then the CLI's own order (priority,
@@ -118,9 +103,9 @@ export function contextText(project: ListedProject, tasks: readonly ListedTask[]
 
 // The answer row of /idea and /todo, from `www add --json`'s task.
 export function captureAnswer(stdout: string): string {
-  const task = parseJson(stdout)
-  if (!isRecord(task) || typeof task.id !== 'string' || typeof task.title !== 'string') return 'Saved. (www add gave output the mod cannot read.)'
-  const where = typeof task.projectId === 'string' ? `project ${task.projectId}` : 'the idea bag'
+  const task = parseJson(stdout) as { id?: string; title?: string; projectId?: string | null } | undefined
+  if (task?.id === undefined || task.title === undefined) return 'Saved. (www add gave output the mod cannot read.)'
+  const where = task.projectId ? `project ${task.projectId}` : 'the idea bag'
   return `Saved to ${where}: ${task.id.slice(0, 8)} ${task.title}`
 }
 
@@ -247,8 +232,9 @@ export function closeJobArgv(sessionId: string, skillPath: string): string[] {
     sessionId,
     'claude',
     '-p',
+    // Sonnet: a fresh run over a short input, so no chat cache to keep.
     '--model',
-    CLOSE_MODEL,
+    'sonnet',
     '--system-prompt',
     CLOSE_ROLE,
     '--append-system-prompt-file',
