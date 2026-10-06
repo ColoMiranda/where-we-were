@@ -1,4 +1,4 @@
-import type { Project, WwwTask } from "./types";
+import type { Project, WwwTask } from "./types.ts";
 
 /**
  * Copy-as-prompt: renders a task as a paste-ready prompt for any agent.

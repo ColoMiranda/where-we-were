@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { Project, WwwTask } from "@/lib/types";
-import { taskToPrompt } from "@/lib/prompt";
+import { taskToPrompt } from "@www/shared";
 
 export const statusTag: Record<WwwTask["status"], string> = {
   idea: "IDEA",

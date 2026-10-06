@@ -11,6 +11,7 @@ export type {
 } from "./types.ts";
 export { TASK_STATUSES } from "./types.ts";
 export { normalizeRemote, slugify } from "./normalize.ts";
+export { taskToPrompt } from "./prompt.ts";
 export {
   parseBlocker,
   parseContext,

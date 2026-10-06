@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 import { add } from "./commands/add.ts";
 import { done } from "./commands/done.ts";
-import { hook } from "./commands/hook.ts";
 import { init } from "./commands/init.ts";
 import { link } from "./commands/link.ts";
 import { list } from "./commands/list.ts";
 import { project } from "./commands/project.ts";
+import { prompt } from "./commands/prompt.ts";
 import { save } from "./commands/save.ts";
 import { CliError } from "./errors.ts";
 
@@ -22,7 +22,7 @@ Usage:
   www list [--project <id>] [--status <s>]* [--idea] [--all]
   www done <task-id> [--win "<one line>"]
   www project [--check]                register status of the cwd repo
-  www hook stop   Claude Code Stop-hook endpoint (reads hook JSON on stdin)
+  www prompt <task-id>                 print the task as a paste-ready prompt
 
 All commands take --json. Task ids accept a unique prefix (4+ chars).
 Config: WWW_DATABASE_URL env var, or ~/.config/www/.env`;
@@ -35,7 +35,11 @@ const commands: Record<string, (argv: string[]) => Promise<void>> = {
   list,
   done,
   project,
-  hook,
+  prompt,
+  // Retired: the Stop-hook nudge moved into the plugin's mod (save on close).
+  // Kept as a silent no-op, so an old `www hook stop` entry in
+  // ~/.claude/settings.json never errors at the end of a turn.
+  hook: async () => {},
 };
 
 const [, , cmd, ...rest] = process.argv;
